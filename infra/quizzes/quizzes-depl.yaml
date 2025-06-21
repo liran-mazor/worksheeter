@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quizzes-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quizzes
+  template:
+    metadata:
+      labels:
+        app: quizzes
+    spec:
+      containers:
+        - name: quizzes
+          image: liran1789/quizzes
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name 
+            - name: MONGO_URI
+              value: 'mongodb://quizzes-mongo-srv:27017/quizzes'
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: worksheeter
+            - name: QUEUE_GROUP_NAME
+              value: 'quizzes-service'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quizzes-srv
+spec:
+  selector:
+    app: quizzes
+  ports:
+    - name: quizzes
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

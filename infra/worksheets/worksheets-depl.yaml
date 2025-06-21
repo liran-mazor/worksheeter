@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worksheets-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worksheets
+  template:
+    metadata:
+      labels:
+        app: worksheets
+    spec:
+      containers:
+        - name: worksheets
+          image: liran1789/worksheets
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name 
+            - name: MONGO_URI
+              value: 'mongodb://worksheets-mongo-srv:27017/worksheets'
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: worksheeter
+            - name: QUEUE_GROUP_NAME
+              value: 'worksheets-service'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worksheets-srv
+spec:
+  selector:
+    app: worksheets
+  ports:
+    - name: worksheets
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

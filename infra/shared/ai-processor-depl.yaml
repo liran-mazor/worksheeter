@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-processor-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-processor
+  template:
+    metadata:
+      labels:
+        app: ai-processor
+    spec:
+      containers:
+        - name: ai-processor
+          image: liran1789/ai-processor
+          env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name 
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: worksheeter
+            - name: QUEUE_GROUP_NAME
+              value: 'ai-processor-service'
+            - name: CLAUDE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: claude-secret
+                  key: CLAUDE_API_KEY

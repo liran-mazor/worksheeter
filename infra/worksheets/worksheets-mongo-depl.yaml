@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worksheets-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worksheets-mongo
+  template:
+    metadata:
+      labels:
+        app: worksheets-mongo
+    spec:
+      containers:
+        - name: worksheets-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: worksheets-mongo-srv
+spec:
+  selector:
+    app: worksheets-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
