@@ -192,9 +192,6 @@ const QuizReviewPage = ({ quiz, errors }) => {
           <a href={`/worksheets/${quiz.worksheetId}`} className="btn secondary">
             📄 View Worksheet
           </a>
-          <button className="btn success" onClick={() => window.location.href = `/quizzes/${quiz.id}`}>
-            🔄 Retake Quiz
-          </button>
         </div>
 
         {/* Study Tips */}

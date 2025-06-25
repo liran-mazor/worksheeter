@@ -5,8 +5,8 @@ import {
   NotFoundError,
   requireAuth,
   NotAuthorizedError,
-} from '@liranmazor/ticketing-common';
-import { natsWrapper } from '../nats-wrapper';
+} from '@liranmazor/common';
+import { natsClient } from '../lib/nats-client';
 import { Worksheet } from '../models/worksheet';
 import { WorksheetUpdatedPublisher } from '../events/publisher/worksheet-updated-publisher';
 
@@ -56,17 +56,21 @@ router.put(
     });
     await worksheet.save();
     
-    await new WorksheetUpdatedPublisher(natsWrapper.client).publish({
-      id: worksheet.id,
-      title: worksheet.title,
-      userId: worksheet.userId,
-      keywords: worksheet.keywords,
-      questions: worksheet.questions,
-      status: worksheet.status,
-      version: worksheet.version
-    });
-    
-    res.send(worksheet);
+    try {
+      await new WorksheetUpdatedPublisher(natsClient.client).publish({
+        id: worksheet.id,
+        title: worksheet.title,
+        userId: worksheet.userId,
+        keywords: worksheet.keywords,
+        questions: worksheet.questions,
+        status: worksheet.status,
+        version: worksheet.version
+      });
+    } catch (error) {
+      console.error('Failed to publish worksheet update event:', error);
+    }
+
+    res.send(worksheet); 
   }
 );
 

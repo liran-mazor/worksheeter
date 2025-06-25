@@ -20,6 +20,7 @@ export default ({ currentUser }) => {
       { label: 'My Worksheets', href: '/worksheets', icon: 'fas fa-file-alt' },
       { label: 'Quizzes', href: '/quizzes', icon: 'fas fa-brain' },
       { label: 'New Worksheet', href: '/worksheets/new', icon: 'fas fa-plus-circle' },
+      { label: 'Code Executor', href: '/code-executor', icon: 'fas fa-code' },
     ] : [])
   ];
 

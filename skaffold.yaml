@@ -2,7 +2,7 @@ apiVersion: skaffold/v4beta3
 kind: Config
 manifests:
   rawYaml:
-    - ./infra/k8s/*
+    - ./infra/**/*
 build:
   local:
     push: false
@@ -47,4 +47,19 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-          
+    - image: liran1789/insights
+      context: insights
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .
+    - image: liran1789/code-executor
+      context: code-executor
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .

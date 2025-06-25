@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { natsWrapper } from '../nats-wrapper';
-import { requireAuth, validateRequest, BadRequestError } from '@liranmazor/ticketing-common';
+import { natsClient } from '../lib/nats-client';
+import { requireAuth, validateRequest, BadRequestError } from '@liranmazor/common';
 import { Worksheet } from '../models/worksheet';
 import { WorksheetCreatedPublisher } from '../events/publisher/worksheet-created-publisher';
 
@@ -54,15 +54,19 @@ router.post(
     
     await worksheet.save();
 
-    await new WorksheetCreatedPublisher(natsWrapper.client).publish({
-      id: worksheet.id,
+    try {
+      await new WorksheetCreatedPublisher(natsClient.client).publish({
+        id: worksheet.id,
       title: worksheet.title,
       userId: worksheet.userId,
       keywords: worksheet.keywords,
       questions: worksheet.questions,
       status: worksheet.status,
       version: worksheet.version
-    });
+      });
+    } catch (error) {
+      console.error('Failed to publish worksheet creation event:', error);
+    }
 
     res.status(201).send(worksheet);
   }

@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { requireAuth } from '@liranmazor/ticketing-common';
+import { requireAuth } from '@liranmazor/common';
 import { Worksheet } from '../models/worksheet';
 
 const router = express.Router();

@@ -1,8 +1,10 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@liranmazor/ticketing-common';
-import { Quiz } from '../models/quiz';
-import { natsWrapper } from '../nats-wrapper';
+import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@liranmazor/common';
+import { QuizService } from '../services/quiz.service';
+import { QuizStatus } from '../types/quiz';
+import { QuizCompletePublisher } from '../events/publisher/quiz-complete-publisher';
+import { natsClient } from '../lib/nats-client';
 
 const router = express.Router();
 
@@ -19,33 +21,45 @@ router.post(
     const { score } = req.body;
     const quizId = req.params.id;
 
-    const quiz = await Quiz.findById(quizId);
-    
+    const quiz = await QuizService.findById(quizId);
     if (!quiz) {
       throw new NotFoundError();
     }
-
     if (quiz.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();
     }
-
-    if (quiz.status !== 'available') {
+    if (quiz.status !== QuizStatus.AVAILABLE) {
       throw new NotFoundError();
     }
 
-    await quiz.complete(score);
+    const updatedQuiz = await QuizService.complete(quizId, score);
 
-    // await new QuizCompletedPublisher(natsWrapper.client).publish({
-    //   id: quiz.id,
-    //   worksheetId: quiz.worksheetId,
-    //   userId: quiz.userId,
-    //   difficulty: quiz.difficulty,
-    //   score: score,
-    //   completedAt: quiz.completedAt!.toISOString(),
-    //   version: quiz.version
-    // });
+    let questions = [];
+    if (updatedQuiz.questions && Array.isArray(updatedQuiz.questions.questions)) {
+      questions = updatedQuiz.questions.questions;
+    } else if (Array.isArray(updatedQuiz.questions)) {
+      questions = updatedQuiz.questions;
+    }
+   
+    try {
+      await new QuizCompletePublisher(natsClient.client).publish({
+        quizId: updatedQuiz.id,
+        worksheetId: updatedQuiz.worksheetId,
+        worksheetTitle: updatedQuiz.title, 
+        userId: updatedQuiz.userId,
+        score: updatedQuiz.score || 0,
+        difficulty: updatedQuiz.difficulty.toLowerCase() as "beginner" | "intermediate" | "advanced",
+        completedAt: updatedQuiz.completedAt || new Date(),
+        version: updatedQuiz.version || 0
+      });
+    } catch (error) {
+      console.error('Failed to publish quiz completion event:', error);
+    }
 
-    res.send(quiz);
+    res.send({
+      ...updatedQuiz,
+      questions,
+    });
   }
 );
 

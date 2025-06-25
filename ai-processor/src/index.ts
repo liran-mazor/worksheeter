@@ -1,6 +1,7 @@
+import { CodeExecutedListener } from './events/listener/code-executed-listener';
 import { QuizCreatedListener } from './events/listener/quiz-created-listener';
 import { WorksheetCreatedListener } from './events/listener/worksheet-created-listener';
-import { natsWrapper } from './nats-wrapper';
+import { natsClient } from './lib/nats-client';
 
 const start = async () => {
   
@@ -21,23 +22,24 @@ const start = async () => {
   }
 
   try {
-    await natsWrapper.connect(
+    await natsClient.connect(
       process.env.NATS_CLUSTER_ID,
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
 
-    natsWrapper.client.on('close', () => {
+    natsClient.client.on('close', () => {
       console.log('NATS connection closed!');
       process.exit();
     });
 
-    process.on('SIGINT', () => natsWrapper.client.close());
-    process.on('SIGTERM', () => natsWrapper.client.close());
+    process.on('SIGINT', () => natsClient.client.close());
+    process.on('SIGTERM', () => natsClient.client.close());
     
-    new WorksheetCreatedListener(natsWrapper.client).listen();
-    new QuizCreatedListener(natsWrapper.client).listen();
-
+    new WorksheetCreatedListener(natsClient.client).listen();
+    new QuizCreatedListener(natsClient.client).listen();
+    new CodeExecutedListener(natsClient.client).listen();
+    
   } catch (err) {
     console.error(err);
   }

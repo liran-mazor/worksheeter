@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { requireAuth, NotFoundError, NotAuthorizedError } from '@liranmazor/ticketing-common';
-import { Quiz } from '../models/quiz';
+import { requireAuth, NotFoundError, NotAuthorizedError } from '@liranmazor/common';
+import { QuizService } from '../services/quiz.service';
 
 const router = express.Router();
 
@@ -8,8 +8,7 @@ router.get(
   '/api/quizzes/:id',
   requireAuth,
   async (req: Request, res: Response) => {
-    
-    const quiz = await Quiz.findById(req.params.id);
+    const quiz = await QuizService.findById(req.params.id);
 
     if (!quiz) {
       throw new NotFoundError();
@@ -19,7 +18,18 @@ router.get(
       throw new NotAuthorizedError();
     }
 
-    res.send(quiz);
+    // Normalize questions for frontend
+    let questions = [];
+    if (quiz.questions && Array.isArray(quiz.questions.questions)) {
+      questions = quiz.questions.questions;
+    } else if (Array.isArray(quiz.questions)) {
+      questions = quiz.questions;
+    }
+
+    res.send({
+      ...quiz,
+      questions,
+    });
   }
 );
 

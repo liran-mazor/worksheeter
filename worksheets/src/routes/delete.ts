@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
-import { natsWrapper } from '../nats-wrapper';
-import { NotAuthorizedError, NotFoundError, requireAuth } from '@liranmazor/ticketing-common';
+import { natsClient } from '../lib/nats-client';
+import { NotAuthorizedError, NotFoundError, requireAuth } from '@liranmazor/common';
 import { Worksheet } from '../models/worksheet';
 import { WorksheetDeletedPublisher } from '../events/publisher/worksheet-deleted-publisher';
 
@@ -12,7 +12,7 @@ router.delete(
   async (req: Request, res: Response) => {
     const { worksheetId } = req.params;
 
-    const worksheet = await Worksheet.findById(worksheetId)
+    const worksheet = await Worksheet.findById(worksheetId);
 
     if (!worksheet) {
       throw new NotFoundError();
@@ -23,13 +23,16 @@ router.delete(
     
     await Worksheet.findByIdAndDelete(worksheetId);
 
-    await new WorksheetDeletedPublisher(natsWrapper.client).publish({
-      id: worksheet.id,
-      userId: worksheet.userId,
-    });
+    try {
+      await new WorksheetDeletedPublisher(natsClient.client).publish({
+        id: worksheet.id,
+        userId: worksheet.userId,
+      });
+    } catch (error) {
+      console.error('Failed to publish worksheet deletion event:', error);
+    }
 
-    res.status(204).send(worksheet);
+    res.status(204).send();
   }
 );
-
 export { router as deleteWorksheetRouter };

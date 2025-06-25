@@ -7,7 +7,7 @@ import { currentUserRouter } from './routes/current-user';
 import { signoutRouter } from './routes/signout';
 import { signinRouter } from './routes/signin';
 import { signupRouter } from './routes/signup';
-import { errorHandler, rateLimiter } from '@liranmazor/ticketing-common';
+import { errorHandler, rateLimiter } from '@liranmazor/common';
 import { healthRouter } from './routes/health';
 
 const app = express();
@@ -28,14 +28,15 @@ app.use(healthRouter);
 app.use(json());
 
 app.use(
-   cookieSession({
-     signed: false,
-     secure: process.env.NODE_ENV !== 'test',
-     httpOnly: true,                   
-     sameSite: 'lax',        
-     maxAge: 24 * 60 * 60 * 1000
-   })
- );
+  cookieSession({
+    signed: false,
+    secure: false, 
+    httpOnly: true, 
+    maxAge: 15 * 60 * 1000, 
+    domain: '.worksheeter.dev', 
+    sameSite: 'lax' 
+  })
+);
 
 app.use(rateLimiter as any);
 

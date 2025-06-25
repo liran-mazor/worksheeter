@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A single, clear enum for the quiz lifecycle
+enum QuizStatus {
+  PROCESSING // AI is generating the questions
+  AVAILABLE // Quiz is ready for the user to take
+  COMPLETED // User has submitted their answers
+  FAILED // AI failed to generate the questions
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+// Worksheet model, acts as the context for quiz generation.
+// This is a local copy of the data from the 'worksheet:created' event.
+model Worksheet {
+  id        String   @id
+  title     String
+  userId    String
+  keywords  String[]
+  version   Int // Important for optimistic concurrency
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The relation: One Worksheet can have many Quizzes
+  quizzes Quiz[]
+}
+
+model Quiz {
+  id          String     @id @default(uuid())
+  worksheetId String
+  userId      String
+  title       String
+  difficulty  Difficulty
+  questions   Json // The generated questions and options
+  status      QuizStatus @default(PROCESSING) // Default to PROCESSING on creation
+  score       Int? // Nullable, only set when status is COMPLETED
+  completedAt DateTime? // Nullable, only set when status is COMPLETED
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  version     Int // For optimistic concurrency control
+
+  // Define the many-to-one relation back to the Worksheet
+  worksheet Worksheet @relation(fields: [worksheetId], references: [id])
+
+  // Enforce one quiz of each difficulty per worksheet
+  @@unique([worksheetId, difficulty])
+}

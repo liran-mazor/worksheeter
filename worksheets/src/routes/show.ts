@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { NotAuthorizedError, NotFoundError, requireAuth } from '@liranmazor/ticketing-common';
+import { NotAuthorizedError, NotFoundError, requireAuth } from '@liranmazor/common';
 import { Worksheet } from '../models/worksheet';
 
 const router = express.Router();

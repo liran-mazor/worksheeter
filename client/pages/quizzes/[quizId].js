@@ -310,12 +310,6 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
               >
                 Review Questions
               </a>
-              <button 
-                className="btn btn-outline-primary"
-                onClick={() => window.location.reload()}
-              >
-                Retake Quiz
-              </button>
             </div>
           </div>
         </div>

@@ -1,4 +1,6 @@
-export function webpack(config, { dev }) {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  webpack: (config, { dev }) => {
   if (dev) {
     config.watchOptions = {
       poll: false,
@@ -7,3 +9,6 @@ export function webpack(config, { dev }) {
   }
   return config
 }
+}
+
+export default nextConfig

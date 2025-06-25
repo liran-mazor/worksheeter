@@ -16,6 +16,7 @@ const QuizzesPage = ({ quizzes, errors }) => {
       setLoadingQuiz(null);
       if (quiz.status === 'processing') {
         setProcessingQuizzes(prev => new Set([...prev, quiz.id]));
+        setShowLoadingOverlay(true);
       } else if (quiz.status === 'available') {
         setShowLoadingOverlay(false);
         window.location.href = `/quizzes/${quiz.id}`;
@@ -88,7 +89,7 @@ const QuizzesPage = ({ quizzes, errors }) => {
     try {
       await doRequest({
         worksheetId,
-        difficulty
+        difficulty: difficulty.toUpperCase()
       });
     } catch (error) {
       console.error('Failed to create quiz:', error);
@@ -108,6 +109,18 @@ const QuizzesPage = ({ quizzes, errors }) => {
       setLoadingQuiz(null);
       setShowLoadingOverlay(false);
     }
+  };
+
+  // Determines if a level is unlocked based on quiz progress
+  const isLevelUnlocked = (quizProgress, difficulty) => {
+    if (difficulty === 'beginner') return true;
+    if (difficulty === 'intermediate') {
+      return quizProgress.beginner.status === 'completed';
+    }
+    if (difficulty === 'advanced') {
+      return quizProgress.intermediate.status === 'completed';
+    }
+    return false;
   };
 
   // Get card color based on highest achievement
@@ -152,199 +165,64 @@ const QuizzesPage = ({ quizzes, errors }) => {
     return info[difficulty] || { label: difficulty, icon: '🏆', color: '#6366f1' };
   };
 
-  const renderLevelActions = (status, difficulty, worksheetId, availability) => {
+  const renderQuizAction = (status, difficulty, worksheetId, quizProgress) => {
     const loadingKey = `${worksheetId}-${difficulty}`;
     const isLoading = loadingQuiz === loadingKey;
+    const isUnlocked = isLevelUnlocked(quizProgress, difficulty);
 
-    // If level is locked
-    if (!availability.isUnlocked) {
+    if (!isUnlocked) {
       return (
-        <div className="level-actions">
+        <div className="locked-message">
+          Complete previous level to unlock
         </div>
       );
     }
 
-    switch (status.status) {
+    switch (status?.status) {
       case 'completed':
         return (
-          <div className="level-actions">
-            <div className="action-buttons dual" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-              <button 
-                className="action-btn secondary"
-                style={{
-                  background: 'linear-gradient(135deg,rgb(125, 126, 128),rgb(191, 194, 197))',
-                  color: 'white',
-                  border: '1px solid rgb(176, 177, 178)',
-                  padding: '0.475rem 1.5rem',
-                  borderRadius: '10px',
-                  fontWeight: '600',
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 8px rgba(248, 249, 250, 0.3)'
-                }}
-                onClick={() => handleStartQuiz(worksheetId, difficulty)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="btn-spinner"></span>
-                    Loading...
-                  </>
-                ) : (
-                  'Retake Quiz'
-                )}
-              </button>
-              
-              <Link 
-                href={`/quizzes/quiz-review/${status.quizId}`} 
-                className="action-btn secondary"
-                style={{
-                  background: 'linear-gradient(135deg,rgb(125, 126, 128),rgb(191, 194, 197))',
-                  color: 'white',
-                  border: '1px solid rgb(176, 177, 178)',
-                  padding: '0.475rem 1.5rem',
-                  borderRadius: '10px',
-                  fontWeight: '600',
-                  fontSize: '0.875rem',
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 4px 8px rgba(164, 174, 190, 0.3)'
-                }}
-              >
-                View Quiz
-              </Link>
-            </div>
+          <div className="quiz-actions">
+            <Link href={`/quizzes/quiz-review/${status.quizId}`} className="btn btn-secondary">
+              Review Quiz
+            </Link>
           </div>
         );
-
       case 'failed':
         return (
-          <div className="level-actions">
-            <div className="action-buttons dual">
-              <button 
-                className="action-btn secondary"
-                onClick={() => handleStartQuiz(worksheetId, difficulty)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="btn-spinner"></span>
-                    Loading...
-                  </>
-                ) : (
-                  'Retake'
-                )}
-              </button>
-              <Link 
-                href={`/quizzes/quiz-review/${status.quizId}`} 
-                className="action-btn secondary"
-              >
-                Review
-              </Link>
-            </div>
+          <div className="quiz-actions">
+            <span className="score-display failed">Failed</span>
           </div>
         );
-
       case 'processing':
         return (
-          <div className="level-actions">
-            <div className="processing-indicator">
-              <span className="processing-spinner"></span>
-              <span>Generating quiz...</span>
+          <div className="quiz-actions">
+            <div className="processing-message">
+              Generating quiz...
             </div>
-            <div className="processing-note">This may take a few moments</div>
           </div>
         );
-
       case 'available':
         if (status.quizId) {
           return (
-            <div className="level-actions">
-              <div className="action-buttons single">
-                <Link 
-                  href={`/quizzes/${status.quizId}`} 
-                  className="action-btn primary"
-                  style={{
-                    background: 'linear-gradient(135deg,rgb(125, 126, 128),rgb(191, 194, 197))',
-                    color: 'white',
-                    border: '1px solid rgb(55, 96, 160)',
-                    padding: '0.475rem 0.5rem',
-                    borderRadius: '10px',
-                    fontWeight: '600',
-                    fontSize: '0.875rem',
-                    textDecoration: 'none',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 8px rgba(123, 127, 133, 0.3)'
-                  }}
-                >
-                  Start Quiz
-                </Link>
-              </div>
+            <div className="quiz-actions">
+              <Link href={`/quizzes/${status.quizId}`} className="btn btn-primary">
+                Start Quiz
+              </Link>
             </div>
           );
         }
-        return (
-          <div className="level-actions">
-            <div className="action-buttons single">
-              <button 
-                className="action-btn primary"
-                style={{
-                  background: 'linear-gradient(135deg,rgb(29, 112, 50),rgb(115, 165, 116))',
-                  color: 'white',
-                  border: '1px solid rgb(57, 84, 66)',
-                  padding: '0.475rem 0.5rem',
-                  borderRadius: '10px',
-                  fontWeight: '600',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  boxShadow: '0 2px 8px rgba(74, 201, 98, 0.3)'
-                }}
-                onClick={() => handleStartQuiz(worksheetId, difficulty)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="btn-spinner"></span>
-                    Generating...
-                  </>
-                ) : (
-                  'Generate Quiz'
-                )}
-              </button>
-            </div>
-          </div>
-        );
-
+        // If available but no quizId, fall through to default
       default:
+        // Show Generate Quiz button if no quiz exists or unknown state
         return (
-          <div className="level-actions">
-            <div className="action-buttons single">
-              <button 
-                className="action-btn primary"
-                onClick={() => handleStartQuiz(worksheetId, difficulty)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <span className="btn-spinner"></span>
-                    Generating...
-                  </>
-                ) : (
-                  'Generate Quiz'
-                )}
-              </button>
-            </div>
+          <div className="quiz-actions">
+            <button 
+              className="btn btn-primary"
+              onClick={() => handleStartQuiz(worksheetId, difficulty)}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Generating...' : 'Generate Quiz'}
+            </button>
           </div>
         );
     }
@@ -417,9 +295,14 @@ const QuizzesPage = ({ quizzes, errors }) => {
             <div className="error-content">
               <h4>Something went wrong</h4>
               <ul>
-                {requestErrors.map((err) => (
-                  <li key={err.message}>{err.message}</li>
-                ))}
+                {Array.isArray(requestErrors)
+                  ? requestErrors.map((err) => (
+                      <li key={err.message || err}>{err.message || err}</li>
+                    ))
+                  : requestErrors
+                    ? <li>{requestErrors}</li>
+                    : null
+                }
               </ul>
             </div>
           </div>
@@ -508,11 +391,11 @@ const QuizzesPage = ({ quizzes, errors }) => {
                             </div>
                           </div>
                           
-                          {renderLevelActions(
-                            { ...status, worksheetId: quiz.worksheetId },
+                          {renderQuizAction(
+                            status,
                             difficulty,
                             quiz.worksheetId,
-                            levelAvailability
+                            quiz.quizProgress
                           )}
                         </div>
                       );
@@ -540,7 +423,7 @@ const QuizzesPage = ({ quizzes, errors }) => {
             </div>
             <div className="instruction-item">
               <div className="instruction-number">2</div>
-              <span>Score <strong>100%</strong> to unlock the next level</span>
+              <span>Finish the quiz to unlock the next level</span>
             </div>
             <div className="instruction-item">
               <div className="instruction-number">3</div>

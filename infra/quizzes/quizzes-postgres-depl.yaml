@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quizzes-postgres-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quizzes-postgres
+  template:
+    metadata:
+      labels:
+        app: quizzes-postgres
+    spec:
+      containers:
+        - name: quizzes-postgres
+          image: postgres:15
+          env:
+            - name: POSTGRES_DB
+              value: 'quizzes'
+            - name: POSTGRES_USER
+              value: 'pudding'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quizzes-postgres-srv
+spec:
+  selector:
+    app: quizzes-postgres
+  ports:
+    - name: db
+      protocol: TCP
+      port: 5432
+      targetPort: 5432

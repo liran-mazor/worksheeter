@@ -1,0 +1,48 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: quizzes-migrate-job
+  labels:
+    app: quizzes-migrate
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+      - name: quizzes-migrate
+        image: liran1789/quizzes
+        command: 
+          - /bin/sh
+          - -c
+          - |
+            npx prisma migrate dev --name auto_migration
+        env:
+        - name: DATABASE_URL
+          value: 'postgresql://pudding:asdf@quizzes-postgres-srv:5432/quizzes'
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+        - name: CI
+          value: "true"
+        - name: SKIP_SEED
+          value: "true"
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-postgres
+        image: postgres:15
+        command: 
+          - /bin/sh
+          - -c
+          - |
+            until pg_isready -h quizzes-postgres-srv -p 5432 -U pudding > /dev/null 2>&1; do
+              sleep 2
+            done
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: POSTGRES_PASSWORD
+  backoffLimit: 3
