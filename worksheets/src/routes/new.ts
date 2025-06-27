@@ -54,6 +54,8 @@ router.post(
     
     await worksheet.save();
 
+    res.status(201).send(worksheet);
+   
     try {
       await new WorksheetCreatedPublisher(natsClient.client).publish({
         id: worksheet.id,
@@ -67,8 +69,6 @@ router.post(
     } catch (error) {
       console.error('Failed to publish worksheet creation event:', error);
     }
-
-    res.status(201).send(worksheet);
   }
 );
 

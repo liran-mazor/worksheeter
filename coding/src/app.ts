@@ -5,6 +5,7 @@ import { currentUser, errorHandler, rateLimiter } from '@liranmazor/common';
 import helmet from 'helmet';
 import { healthRouter } from './routes/health';
 import { executeCodeRouter } from './routes/execute';
+import { problemsRouter } from './routes/problems';
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use(rateLimiter as any);
 app.use(currentUser);
 
 app.use(executeCodeRouter);
+app.use(problemsRouter);
 
 app.use(errorHandler as any);
 

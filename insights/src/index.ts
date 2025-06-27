@@ -1,6 +1,7 @@
 import { app } from './app';
 import { natsClient } from './lib/nats-client';
-import { QuizCompleteListener } from './events/listener/quis-complete-listener';
+import { QuizCompleteListener } from './events/quiz-complete-listener';
+import { CodeAnalyzedListener } from './events/code-analyzed-listener';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -35,7 +36,8 @@ const start = async () => {
     process.on('SIGTERM', () => natsClient.client.close());
     
     new QuizCompleteListener(natsClient.client).listen();
-
+    new CodeAnalyzedListener(natsClient.client).listen();
+    
   } catch (err) {
     console.error(err);
   }

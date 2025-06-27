@@ -23,6 +23,8 @@ router.delete(
     
     await Worksheet.findByIdAndDelete(worksheetId);
 
+    res.status(204).send();
+    
     try {
       await new WorksheetDeletedPublisher(natsClient.client).publish({
         id: worksheet.id,
@@ -32,7 +34,6 @@ router.delete(
       console.error('Failed to publish worksheet deletion event:', error);
     }
 
-    res.status(204).send();
   }
 );
 export { router as deleteWorksheetRouter };

@@ -1,8 +1,6 @@
 import { Message } from 'node-nats-streaming';
 import { Listener, WorksheetCreatedEvent, Subjects } from '@liranmazor/common';
 import { WorksheetService } from '../../services/worksheet.service';
-import { QuizService } from '../../services/quiz.service';
-import { Difficulty } from '../../types/quiz';
 
 export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
   subject: Subjects.WorksheetCreated = Subjects.WorksheetCreated;

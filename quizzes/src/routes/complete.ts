@@ -40,7 +40,12 @@ router.post(
     } else if (Array.isArray(updatedQuiz.questions)) {
       questions = updatedQuiz.questions;
     }
-   
+
+    res.status(200).send({
+      ...updatedQuiz,
+      questions,
+    });
+
     try {
       await new QuizCompletePublisher(natsClient.client).publish({
         quizId: updatedQuiz.id,
@@ -56,10 +61,6 @@ router.post(
       console.error('Failed to publish quiz completion event:', error);
     }
 
-    res.send({
-      ...updatedQuiz,
-      questions,
-    });
   }
 );
 

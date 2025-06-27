@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: code-executor-depl
+  name: coding-depl
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: code-executor
+      app: coding
   template:
     metadata:
       labels:
-        app: code-executor
+        app: coding
     spec:
       containers:
-        - name: code-executor
-          image: liran1789/code-executor
+        - name: coding
+          image: liran1789/coding
           env:
             - name: NATS_CLIENT_ID
               valueFrom:
@@ -25,7 +25,7 @@ spec:
             - name: NATS_CLUSTER_ID
               value: worksheeter
             - name: QUEUE_GROUP_NAME
-              value: 'code-executor-service'
+              value: 'coding-service'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:
@@ -42,7 +42,7 @@ spec:
             - containerPort: 3000
           readinessProbe:
             httpGet:
-              path: /api/code-executor/health
+              path: /api/coding/health
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 5
@@ -50,12 +50,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: code-executor-srv
+  name: coding-srv
 spec:
   selector:
-    app: code-executor
+    app: coding
   ports:
-    - name: code-executor
+    - name: coding
       protocol: TCP
       port: 3000
       targetPort: 3000

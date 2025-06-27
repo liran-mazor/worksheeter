@@ -2,10 +2,10 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/api/code-executor/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    service: 'code-executor',
+router.get('/api/coding/health', (req, res) => {
+  res.status(200).send({
+    status: 'ok',
+    service: 'coding',
     timestamp: new Date().toISOString()
   });
 });

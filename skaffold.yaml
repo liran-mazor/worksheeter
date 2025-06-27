@@ -55,8 +55,8 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: liran1789/code-executor
-      context: code-executor
+    - image: liran1789/coding
+      context: coding
       docker:
         dockerfile: Dockerfile
       sync:

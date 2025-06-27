@@ -50,6 +50,8 @@ router.post(
 
     const difficultyString = quiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced';
 
+    res.status(201).send(quiz);
+    
     try {
       await new QuizCreatedPublisher(natsClient.client).publish({
         id: quiz.id,
@@ -64,8 +66,6 @@ router.post(
     } catch (error) {
       console.error('Failed to publish quiz creation event:', error);
     }
-
-    res.status(201).send(quiz);
   }
 );
 

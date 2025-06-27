@@ -56,6 +56,8 @@ router.put(
     });
     await worksheet.save();
     
+    res.send(worksheet); 
+    
     try {
       await new WorksheetUpdatedPublisher(natsClient.client).publish({
         id: worksheet.id,
@@ -69,8 +71,6 @@ router.put(
     } catch (error) {
       console.error('Failed to publish worksheet update event:', error);
     }
-
-    res.send(worksheet); 
   }
 );
 

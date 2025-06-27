@@ -38,11 +38,11 @@ spec:
                 name: insights-srv
                 port:
                   number: 3000
-          - path: /api/code-executor/?(.*)
-            pathType: ImplementationSpecific
+          - path: /api/coding/?(.*)
+            pathType: Prefix
             backend:
               service:
-                name: code-executor-srv
+                name: coding-srv
                 port:
                   number: 3000
           - path: /?(.*)
