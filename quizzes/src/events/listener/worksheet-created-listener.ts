@@ -7,11 +7,8 @@ export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
   queueGroupName = process.env.QUEUE_GROUP_NAME!;
   
   async onMessage(data: WorksheetCreatedEvent['data'], msg: Message) {
-  
-    msg.ack();
-    
     try {
-      const worksheet = await WorksheetService.create({
+      await WorksheetService.create({
         id: data.id,
         title: data.title,
         userId: data.userId,
@@ -21,7 +18,7 @@ export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
 
     } catch (error) {
       console.error('Error processing worksheet created event:', error);
-      msg.ack();
     }
+    msg.ack();
   }
 }

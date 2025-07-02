@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { requireAuth, validateRequest, NotFoundError } from '@liranmazor/common';
+import { requireAuth, validateRequest } from '@liranmazor/common';
 import { natsClient } from '../lib/nats-client';
 import { QuizCreatedPublisher } from '../events/publisher/quiz-created-publisher';
 import { WorksheetService } from '../services/worksheet.service';
 import { QuizService } from '../services/quiz.service';
-import { Difficulty } from '../types/quiz';
+import { Difficulty } from '@prisma/client';
 
 const router = express.Router();
 
@@ -25,10 +25,6 @@ router.post(
     const { worksheetId, difficulty } = req.body;
 
     const worksheet = await WorksheetService.findById(worksheetId);
-
-    if (!worksheet || worksheet.userId !== req.currentUser!.id) {
-      throw new NotFoundError();
-    }
 
     const existingQuiz = await QuizService.findByWorksheetAndDifficulty(
       worksheetId,

@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: weekly-teacher-digest
+spec:
+  schedule: "0 8 * * 1"  # for weekly alerts
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: teacher-digest
+            image: liran1789/insights 
+            command: ["npm", "run", "weekly-digest"]
+            env:
+            - name: DATABASE_URL
+              value: 'postgresql://pudding:asdf@insights-postgres-srv:5432/insights'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD

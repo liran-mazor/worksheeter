@@ -1,3 +1,4 @@
+import { NotFoundError } from '@liranmazor/common';
 import mongoose from 'mongoose';
 import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
@@ -30,6 +31,7 @@ interface WorksheetDoc extends mongoose.Document {
 
 interface WorksheetModel extends mongoose.Model<WorksheetDoc> {
   build(attrs: WorksheetAttrs): WorksheetDoc;
+  findByIdOrThrow(id: string): Promise<WorksheetDoc>;
 }
 
 const worksheetSchema = new mongoose.Schema(
@@ -100,6 +102,16 @@ worksheetSchema.plugin(updateIfCurrentPlugin);
 
 worksheetSchema.statics.build = (attrs: WorksheetAttrs) => {
   return new Worksheet(attrs);
+};
+
+worksheetSchema.statics.findByIdOrThrow = async function(id: string): Promise<WorksheetDoc> {
+  const worksheet = await this.findById(id);
+  
+  if (!worksheet) {
+    throw new NotFoundError();
+  }
+  
+  return worksheet;
 };
 
 const Worksheet = mongoose.model<WorksheetDoc, WorksheetModel>('Worksheet', worksheetSchema);

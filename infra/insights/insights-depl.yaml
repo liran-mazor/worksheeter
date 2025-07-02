@@ -16,6 +16,13 @@ spec:
         - name: insights
           image: liran1789/insights
           env:
+            - name: DATABASE_URL
+              value: 'postgresql://pudding:asdf@insights-postgres-srv:5432/insights'
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: POSTGRES_PASSWORD
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
@@ -25,7 +32,7 @@ spec:
             - name: NATS_CLUSTER_ID
               value: worksheeter
             - name: QUEUE_GROUP_NAME
-              value: 'worksheets-service'
+              value: 'insights-service'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

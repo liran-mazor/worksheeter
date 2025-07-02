@@ -8,6 +8,8 @@ COPY prisma ./prisma/
 
 RUN npm install --omit=dev
 
+RUN npx prisma generate
+
 COPY . .
 
 CMD ["npm", "start"]

@@ -1,18 +1,5 @@
 import { Worksheet, CreateWorksheetData } from './worksheet';
-
-// Enums from schema.prisma
-export enum QuizStatus {
-  PROCESSING = 'PROCESSING',
-  AVAILABLE = 'AVAILABLE', 
-  COMPLETED = 'COMPLETED',
-  FAILED = 'FAILED'
-}
-
-export enum Difficulty {
-  BEGINNER = 'BEGINNER',
-  INTERMEDIATE = 'INTERMEDIATE',
-  ADVANCED = 'ADVANCED'
-}
+import { QuizStatus, Difficulty } from '@prisma/client';
 
 export interface Quiz {
   id: string;

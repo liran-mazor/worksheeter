@@ -9,7 +9,6 @@ export class QuizCreatedListener extends Listener<QuizCreatedEvent> {
   queueGroupName = process.env.QUEUE_GROUP_NAME!;
   
   async onMessage(data: QuizCreatedEvent['data'], msg: Message) {
-
     msg.ack();
     
     try {
@@ -18,7 +17,7 @@ export class QuizCreatedListener extends Listener<QuizCreatedEvent> {
         data.title,
         data.difficulty
       );
-
+      
       await new QuizGeneratedPublisher(natsClient.client).publish({
         id: data.id,
         questions: questions,
@@ -27,17 +26,7 @@ export class QuizCreatedListener extends Listener<QuizCreatedEvent> {
       
     } catch (error) {
       console.error('Quiz generation failed:', error);
-      
-      // Publish failure status
-      try {
-        await new QuizGeneratedPublisher(natsClient.client).publish({
-          id: data.id,
-          questions: [],
-          status: 'failed'
-        });
-      } catch (publishError) {
-        console.error('Failed to publish quiz failure status:', publishError);
-      }
+      return;
     }
   }
 }

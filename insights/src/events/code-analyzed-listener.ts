@@ -10,3 +10,34 @@ export class CodeAnalyzedListener extends Listener<CodeAnalyzedEvent> {
    msg.ack();
   }
 }
+
+//TODO: Vector database for code:analyzed event
+
+/*
+export interface CodeAnalyzedEvent extends Event {
+  subject: Subjects.CodeAnalyzed;
+  data: {
+    id: string;
+    userId: string;
+    problemId: string;
+    
+    // For immediate UI display
+    userFeedback: CodeAnalysis['feedback'];
+    
+    // For insights service analytics (SINGLE SOURCE OF TRUTH)
+    analytics: {
+      strugglingAreas: {
+        category: StruggleCategory;
+        intensity: StruggleIntensity;
+        evidence: string;
+        confidence: number;
+      }[];
+      metrics: CodeMetrics;
+      context: CodeContext;
+    };
+    
+    analyzedAt: string;
+    status: 'completed' | 'failed';
+  };
+}
+*/

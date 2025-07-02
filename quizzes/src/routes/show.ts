@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { requireAuth, NotFoundError, NotAuthorizedError } from '@liranmazor/common';
+import { requireAuth, NotAuthorizedError } from '@liranmazor/common';
 import { QuizService } from '../services/quiz.service';
 
 const router = express.Router();
@@ -9,10 +9,6 @@ router.get(
   requireAuth,
   async (req: Request, res: Response) => {
     const quiz = await QuizService.findById(req.params.id);
-
-    if (!quiz) {
-      throw new NotFoundError();
-    }
 
     if (quiz.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError();

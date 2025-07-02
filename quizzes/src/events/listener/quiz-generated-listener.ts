@@ -11,12 +11,6 @@ export class QuizGeneratedListener extends Listener<QuizGeneratedEvent> {
     msg.ack();
     
     try {
-      // Find the quiz to verify it exists
-      const quiz = await QuizService.findById(data.id);
-      
-      if (!quiz) {
-        throw new NotFoundError();
-      }
 
       if (data.status === 'available' && data.questions.length > 0) {
         await QuizService.markAsAvailable(data.id, data.questions);
@@ -24,10 +18,10 @@ export class QuizGeneratedListener extends Listener<QuizGeneratedEvent> {
         await QuizService.markAsFailed(data.id);
       }
 
-      
     } catch (error) {
       console.error('Error processing quiz generated event:', error);
-      msg.ack(); // Still ack to avoid redelivery
+      return
     }
+    msg.ack();
   }
 }

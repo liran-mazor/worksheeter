@@ -17,20 +17,17 @@ spec:
           image: nats-streaming:0.17.0
           args:
             [
-              '-p',
-              '4222',
-              '-m',
-              '8222',
-              '-hbi',
-              '5s',
-              '-hbt',
-              '5s',
-              '-hbf',
-              '2',
-              '-SD',
-              '-cid',
-              'worksheeter',
+              '-p', '4222',           # Client port
+              '-m', '8222',           # Monitoring port  
+              '-hbi', '5s',           # Heartbeat interval
+              '-hbt', '5s',           # Heartbeat timeout
+              '-hbf', '2',            # Heartbeat fail count
+              '-SD',                  # Enable store directory
+              '-cid', 'worksheeter',   # Cluster ID
             ]
+          ports:
+            - containerPort: 4222
+            - containerPort: 8222
 ---
 apiVersion: v1
 kind: Service

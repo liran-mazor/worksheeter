@@ -1,3 +1,4 @@
+import { Difficulty, QuizStatus } from '@prisma/client';
 import { prisma } from '../lib/prisma-client';
 import { 
   CreateQuizData, 
@@ -7,32 +8,44 @@ import {
   DashboardWorksheet,
   DashboardQuizInfo, 
   Quiz,
-  QuizStatus, 
-  Difficulty
 } from '../types/quiz';
-import { Worksheet, CreateWorksheetData } from '../types/worksheet';
+import { DatabaseConnectionError, NotFoundError, BadRequestError } from '@liranmazor/common';
 
 export class QuizService {
   static async create(data: CreateQuizData): Promise<Quiz> {
-    return await (prisma as any).quiz.create({
-      data: {
-        worksheetId: data.worksheetId,
-        userId: data.userId,
-        title: data.title,
-        difficulty: data.difficulty,
-        questions: { questions: [] }, 
-        version: 1,
-      },
-    });
+    try {
+      return await (prisma as any).quiz.create({
+        data: {
+          worksheetId: data.worksheetId,
+          userId: data.userId,
+          title: data.title,
+          difficulty: data.difficulty,
+          questions: { questions: [] }, 
+          version: 1,
+        },
+      });
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
+    }
   }
 
-  static async findById(id: string): Promise<QuizWithWorksheet | null> {
-    return await (prisma as any).quiz.findUnique({
-      where: { id },
-      include: {
-        worksheet: true,
-      },
-    });
+  static async findById(id: string, userId?: string): Promise<QuizWithWorksheet> {
+    try {
+      const quiz = await (prisma as any).quiz.findUnique({
+        where: { id },
+        include: {
+          worksheet: true,
+        },
+      });
+
+      if (!quiz) {
+        throw new NotFoundError();
+      }
+
+      return quiz;
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
+    }
   }
 
   static async findByWorksheetAndDifficulty(
@@ -54,28 +67,31 @@ export class QuizService {
     id: string,
     questions: QuestionData[]
   ): Promise<Quiz> {
-    // Validate that we have exactly 10 questions
+    // Business validation
     if (questions.length !== 10) {
-      throw new Error('Quiz must have exactly 10 questions');
+      throw new BadRequestError('Quiz must have exactly 10 questions');
     }
 
-    // Validate each question has 4 options
     questions.forEach((q, index) => {
       if (q.options.length !== 4) {
-        throw new Error(`Question ${index + 1} must have exactly 4 options`);
+        throw new BadRequestError(`Question ${index + 1} must have exactly 4 options`);
       }
       if (!q.options.includes(q.correctAnswer)) {
-        throw new Error(`Question ${index + 1}: correct answer must be one of the options`);
+        throw new BadRequestError(`Question ${index + 1}: correct answer must be one of the options`);
       }
     });
 
-    return await (prisma as any).quiz.update({
-      where: { id },
-      data: {
-        status: QuizStatus.AVAILABLE,
-        questions: { questions },
-      },
-    });
+    try {
+      return await (prisma as any).quiz.update({
+        where: { id },
+        data: {
+          status: QuizStatus.AVAILABLE,
+          questions: { questions },
+        },
+      });
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
+    }
   }
 
   static async markAsFailed(id: string): Promise<Quiz> {
@@ -88,19 +104,37 @@ export class QuizService {
     });
   }
 
-  static async complete(id: string, score: number): Promise<Quiz> {
+  static async complete(id: string, score: number, userId: string): Promise<Quiz> {
+    // Business validation
     if (score < 0 || score > 100) {
-      throw new Error('Score must be between 0 and 100');
+      throw new BadRequestError('Score must be between 0 and 100');
     }
 
-    return await (prisma as any).quiz.update({
-      where: { id },
-      data: {
-        status: QuizStatus.COMPLETED,
-        score,
-        completedAt: new Date(),
-      },
-    });
+    try {
+      const quiz = await (prisma as any).quiz.findUnique({
+        where: { id },
+        select: { userId: true, status: true }
+      });
+
+      if (!quiz) {
+        throw new NotFoundError();
+      }
+
+      if (quiz.status !== QuizStatus.AVAILABLE) {
+        throw new BadRequestError('Quiz is not available for completion');
+      }
+
+      return await (prisma as any).quiz.update({
+        where: { id },
+        data: {
+          status: QuizStatus.COMPLETED,
+          score,
+          completedAt: new Date(),
+        },
+      });
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
+    }
   }
 
   static async exists(
@@ -119,104 +153,112 @@ export class QuizService {
     return !!quiz;
   }
 
-  static async getQuestions(id: string): Promise<QuestionData[]> {
-    const quiz = await (prisma as any).quiz.findUnique({
-      where: { id },
-      select: { questions: true, status: true },
-    });
+  static async getQuestions(id: string, userId: string): Promise<QuestionData[]> {
+    try {
+      const quiz = await (prisma as any).quiz.findUnique({
+        where: { id },
+        select: { questions: true, status: true, userId: true },
+      });
 
-    if (!quiz) {
-      throw new Error('Quiz not found');
+      if (!quiz) {
+        throw new NotFoundError();
+      }
+
+      if (quiz.status !== QuizStatus.AVAILABLE) {
+        throw new BadRequestError('Quiz is not available');
+      }
+
+      const questionsData = quiz.questions as QuizQuestions;
+      return questionsData.questions;
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
     }
-
-    if (quiz.status !== QuizStatus.AVAILABLE) {
-      throw new Error('Quiz is not available');
-    }
-
-    const questionsData = quiz.questions as QuizQuestions;
-    return questionsData.questions;
   }
 
   static async getDashboardData(userId: string): Promise<DashboardWorksheet[]> {
-    // Single optimized query with joins
-    const worksheetsWithQuizzes = await (prisma as any).worksheet.findMany({
-      where: { userId },
-      include: {
-        quizzes: {
-          select: {
-            id: true,
-            difficulty: true,
-            status: true,
-            score: true,
-            completedAt: true,
-            createdAt: true,
+    try {
+      // Single optimized query with joins
+      const worksheetsWithQuizzes = await (prisma as any).worksheet.findMany({
+        where: { userId },
+        include: {
+          quizzes: {
+            select: {
+              id: true,
+              difficulty: true,
+              status: true,
+              score: true,
+              completedAt: true,
+              createdAt: true,
+            },
+            orderBy: { createdAt: 'desc' },
           },
-          orderBy: { createdAt: 'desc' },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+      });
 
-    return worksheetsWithQuizzes.map((worksheet: any) => {
-      // Get latest quiz for each difficulty
-      const getLatestQuizByDifficulty = (difficulty: Difficulty) => {
-        return worksheet.quizzes.find((quiz: any) => quiz.difficulty === difficulty);
-      };
+      return worksheetsWithQuizzes.map((worksheet: any) => {
+        // Get latest quiz for each difficulty
+        const getLatestQuizByDifficulty = (difficulty: Difficulty) => {
+          return worksheet.quizzes.find((quiz: any) => quiz.difficulty === difficulty);
+        };
 
-      const beginnerQuiz = getLatestQuizByDifficulty(Difficulty.BEGINNER);
-      const intermediateQuiz = getLatestQuizByDifficulty(Difficulty.INTERMEDIATE);
-      const advancedQuiz = getLatestQuizByDifficulty(Difficulty.ADVANCED);
+        const beginnerQuiz = getLatestQuizByDifficulty(Difficulty.BEGINNER);
+        const intermediateQuiz = getLatestQuizByDifficulty(Difficulty.INTERMEDIATE);
+        const advancedQuiz = getLatestQuizByDifficulty(Difficulty.ADVANCED);
 
-      const getQuizStatus = (quiz: any, isLocked: boolean): DashboardQuizInfo => {
-        if (isLocked) {
-          return { status: 'locked' };
-        }
-        
-        if (!quiz) {
-          return { status: 'available' };
-        }
-        
-        if (quiz.status === QuizStatus.COMPLETED) {
-          return { 
-            status: 'completed', 
-            score: quiz.score, 
-            quizId: quiz.id,
-            completedAt: quiz.completedAt
-          };
-        }
-        
-        if (quiz.status === QuizStatus.PROCESSING) {
-          return { status: 'processing', quizId: quiz.id };
-        }
-        
-        if (quiz.status === QuizStatus.FAILED) {
-          return { status: 'failed', quizId: quiz.id };
-        }
-        
-        if (quiz.status === QuizStatus.AVAILABLE) {
+        const getQuizStatus = (quiz: any, isLocked: boolean): DashboardQuizInfo => {
+          if (isLocked) {
+            return { status: 'locked' };
+          }
+          
+          if (!quiz) {
+            return { status: 'available' };
+          }
+          
+          if (quiz.status === QuizStatus.COMPLETED) {
+            return { 
+              status: 'completed', 
+              score: quiz.score, 
+              quizId: quiz.id,
+              completedAt: quiz.completedAt
+            };
+          }
+          
+          if (quiz.status === QuizStatus.PROCESSING) {
+            return { status: 'processing', quizId: quiz.id };
+          }
+          
+          if (quiz.status === QuizStatus.FAILED) {
+            return { status: 'failed', quizId: quiz.id };
+          }
+          
+          if (quiz.status === QuizStatus.AVAILABLE) {
+            return { status: 'available', quizId: quiz.id };
+          }
+          
           return { status: 'available', quizId: quiz.id };
-        }
-        
-        return { status: 'available', quizId: quiz.id };
-      };
+        };
 
-      // Determine if each difficulty is locked based on completion of previous levels
-      const isBeginnerLocked = false; // Beginner is never locked
-      const isIntermediateLocked = !beginnerQuiz || beginnerQuiz.status !== QuizStatus.COMPLETED;
-      const isAdvancedLocked = !intermediateQuiz || intermediateQuiz.status !== QuizStatus.COMPLETED;
+        // Determine if each difficulty is locked based on completion of previous levels
+        const isBeginnerLocked = false; // Beginner is never locked
+        const isIntermediateLocked = !beginnerQuiz || beginnerQuiz.status !== QuizStatus.COMPLETED;
+        const isAdvancedLocked = !intermediateQuiz || intermediateQuiz.status !== QuizStatus.COMPLETED;
 
-      return {
-        worksheetId: worksheet.id,
-        worksheetTitle: worksheet.title,
-        createdAt: worksheet.createdAt,
-        keywordsCount: worksheet.keywords.length,
-        quizProgress: {
-          beginner: getQuizStatus(beginnerQuiz, isBeginnerLocked),
-          intermediate: getQuizStatus(intermediateQuiz, isIntermediateLocked),
-          advanced: getQuizStatus(advancedQuiz, isAdvancedLocked),
-        },
-      };
-    });
+        return {
+          worksheetId: worksheet.id,
+          worksheetTitle: worksheet.title,
+          createdAt: worksheet.createdAt,
+          keywordsCount: worksheet.keywords.length,
+          quizProgress: {
+            beginner: getQuizStatus(beginnerQuiz, isBeginnerLocked),
+            intermediate: getQuizStatus(intermediateQuiz, isIntermediateLocked),
+            advanced: getQuizStatus(advancedQuiz, isAdvancedLocked),
+          },
+        };
+      });
+    } catch (error) {
+      throw new DatabaseConnectionError(error);
+    }
   }
 
   static async getUserQuizzes(userId: string): Promise<Quiz[]> {

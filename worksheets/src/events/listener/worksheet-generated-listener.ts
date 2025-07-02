@@ -7,16 +7,8 @@ export class WorksheetGeneratedListener extends Listener<WorksheetGeneratedEvent
   queueGroupName = 'worksheets-service';
   
   async onMessage(data: WorksheetGeneratedEvent['data'], msg: Message) {
-    
-    msg.ack();
-    
     try {
-      const worksheet = await Worksheet.findById(data.id);
-      
-      if (!worksheet) {
-        console.error(`Worksheet not found: ${data.id}`);
-        return; 
-      }
+      const worksheet = await Worksheet.findByIdOrThrow(data.id);
       
       worksheet.status = data.status;
       
@@ -33,6 +25,9 @@ export class WorksheetGeneratedListener extends Listener<WorksheetGeneratedEvent
       
     } catch (error) {
       console.error('Error processing worksheet generated event:', error);
+      return
     }
+
+    msg.ack();
   }
 }

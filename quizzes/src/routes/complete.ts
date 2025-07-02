@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@liranmazor/common';
+import { requireAuth, validateRequest } from '@liranmazor/common';
 import { QuizService } from '../services/quiz.service';
-import { QuizStatus } from '../types/quiz';
 import { QuizCompletePublisher } from '../events/publisher/quiz-complete-publisher';
 import { natsClient } from '../lib/nats-client';
 
@@ -21,18 +20,7 @@ router.post(
     const { score } = req.body;
     const quizId = req.params.id;
 
-    const quiz = await QuizService.findById(quizId);
-    if (!quiz) {
-      throw new NotFoundError();
-    }
-    if (quiz.userId !== req.currentUser!.id) {
-      throw new NotAuthorizedError();
-    }
-    if (quiz.status !== QuizStatus.AVAILABLE) {
-      throw new NotFoundError();
-    }
-
-    const updatedQuiz = await QuizService.complete(quizId, score);
+    const updatedQuiz = await QuizService.complete(quizId, score, req.currentUser!.id);
 
     let questions = [];
     if (updatedQuiz.questions && Array.isArray(updatedQuiz.questions.questions)) {
@@ -53,7 +41,7 @@ router.post(
         worksheetTitle: updatedQuiz.title, 
         userId: updatedQuiz.userId,
         score: updatedQuiz.score || 0,
-        difficulty: updatedQuiz.difficulty.toLowerCase() as "beginner" | "intermediate" | "advanced",
+        difficulty: updatedQuiz.difficulty,
         completedAt: updatedQuiz.completedAt || new Date(),
         version: updatedQuiz.version || 0
       });
