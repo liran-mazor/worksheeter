@@ -7,9 +7,7 @@ export class QuizGeneratedListener extends Listener<QuizGeneratedEvent> {
   queueGroupName = process.env.QUEUE_GROUP_NAME!;
   
   async onMessage(data: QuizGeneratedEvent['data'], msg: Message) {
-    
     msg.ack();
-    
     try {
 
       if (data.status === 'available' && data.questions.length > 0) {

@@ -240,10 +240,6 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
               </div>
 
               <div className="worksheet-actions">
-                <Link href={`/worksheets/${worksheet.id}/edit`} className="btn btn-secondary">
-                  <i className="fas fa-edit"></i>
-                  Edit
-                </Link>
                 <button 
                   onClick={handleDelete}
                   className="btn btn-danger"

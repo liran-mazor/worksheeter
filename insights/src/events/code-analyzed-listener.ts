@@ -1,43 +1,18 @@
-import { Listener, CodeAnalyzedEvent, Subjects,  } from "@liranmazor/common";
+import { Listener, CodeAnalyzedEvent, Subjects } from "@liranmazor/common";
 import { Message } from "node-nats-streaming";
+import { vectorService } from "../services/vector.service";
 
 export class CodeAnalyzedListener extends Listener<CodeAnalyzedEvent> {
   subject: Subjects.CodeAnalyzed = Subjects.CodeAnalyzed;
-  queueGroupName = 'insights-service';
+  queueGroupName = process.env.QUEUE_GROUP_NAME!;
   
   async onMessage(data: CodeAnalyzedEvent['data'], msg: Message) {
-   console.log('Received CodeAnalyzedEvent:', JSON.stringify(data, null, 2));
-   msg.ack();
+    try {
+      await vectorService.storeCodeAnalysisEvent(data);
+    } catch (error) {
+      console.error(`Error processing code analyzed event:`, error);
+      return;
+    }
+    msg.ack();
   }
 }
-
-//TODO: Vector database for code:analyzed event
-
-/*
-export interface CodeAnalyzedEvent extends Event {
-  subject: Subjects.CodeAnalyzed;
-  data: {
-    id: string;
-    userId: string;
-    problemId: string;
-    
-    // For immediate UI display
-    userFeedback: CodeAnalysis['feedback'];
-    
-    // For insights service analytics (SINGLE SOURCE OF TRUTH)
-    analytics: {
-      strugglingAreas: {
-        category: StruggleCategory;
-        intensity: StruggleIntensity;
-        evidence: string;
-        confidence: number;
-      }[];
-      metrics: CodeMetrics;
-      context: CodeContext;
-    };
-    
-    analyzedAt: string;
-    status: 'completed' | 'failed';
-  };
-}
-*/

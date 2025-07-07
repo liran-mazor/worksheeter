@@ -4,6 +4,8 @@ import { QuizCompleteListener } from './events/quiz-complete-listener';
 import { CodeAnalyzedListener } from './events/code-analyzed-listener';
 import { prisma } from './lib/prisma-client';
 import { WorksheetCreatedListener } from './events/worksheet-created-listener';
+import { vectorClient } from './lib/vector-client';
+import { vectorService } from './services/vector.service';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -24,9 +26,17 @@ const start = async () => {
   if (!process.env.NATS_CLUSTER_ID) {
     throw new Error('NATS_CLUSTER_ID must be defined');
   }
-
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY must be defined');
+  }
+  if (!process.env.CLAUDE_API_KEY) {
+    throw new Error('CLAUDE_API_KEY must be defined');
+  }
+  
   try {
-
+    await vectorClient.connect();
+    await vectorService.initialize();
+    
     await prisma.$connect();
     console.log('Connected to PostgreSQL');
     
@@ -35,14 +45,7 @@ const start = async () => {
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
-
-    natsClient.client.on('close', () => {
-      console.log('NATS connection closed!');
-      process.exit();
-    });
-
-    process.on('SIGINT', () => natsClient.client.close());
-    process.on('SIGTERM', () => natsClient.client.close());
+    natsClient.setupGracefulShutdown();
     
     new QuizCompleteListener(natsClient.client).listen();
     new CodeAnalyzedListener(natsClient.client).listen();

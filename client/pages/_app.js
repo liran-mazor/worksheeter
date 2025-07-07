@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '../styles/globals.css';
 import Head from 'next/head';
 import buildClient from '../api/build-client';
-import Header from '../components/header';
+import Sidebar from '../components/sidebar';
 import Footer from '../components/footer';
 
 const AppComponent = ({ Component, pageProps, currentUser }) => {
@@ -15,12 +15,44 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
       </Head>
       
       <div className="app-container">
-        <Header currentUser={currentUser} />
-        <main className="main-content">
-          <Component currentUser={currentUser} {...pageProps} />
-        </main>
-        <Footer />
+        <Sidebar currentUser={currentUser} />
+        <div className="main-layout">
+          <main className="main-content">
+            <Component currentUser={currentUser} {...pageProps} />
+          </main>
+          <Footer />
+        </div>
       </div>
+
+      <style jsx global>{`
+        .app-container {
+          display: flex;
+          min-height: 100vh;
+        }
+
+        .main-layout {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+        }
+
+        .main-content {
+          flex: 1;
+          background: #ffffff;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .app-container {
+            flex-direction: column;
+          }
+          
+          .main-layout {
+            min-height: calc(100vh - 60px);
+          }
+        }
+      `}</style>
     </>
   );
 };

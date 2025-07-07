@@ -1,8 +1,8 @@
 import { Message } from 'node-nats-streaming';
-import { CodeExecutedEvent, Listener, Subjects } from '@liranmazor/common';
-import { natsClient } from '../../lib/nats-client';
-import { claudeClient } from '../../lib/claude-client';
+import { Subjects, Listener, CodeExecutedEvent } from '@liranmazor/common';
 import { CodeAnalyzedPublisher } from '../publisher/code-analyzed-publisher';
+import { natsClient } from '../../lib/nats-client';
+import { codeService } from '../../services/code.service';
 
 export class CodeExecutedListener extends Listener<CodeExecutedEvent> {
   subject: Subjects.CodeExecuted = Subjects.CodeExecuted;
@@ -10,10 +10,8 @@ export class CodeExecutedListener extends Listener<CodeExecutedEvent> {
   
   async onMessage(data: CodeExecutedEvent['data'], msg: Message) {
     msg.ack();
-    
     try {
-      // Generate analysis using Claude
-      const analysis = await claudeClient.generateCodeAnalysis(
+      const analysis = await codeService.generateCodeAnalysis(
         data.problemDescription,
         data.userCode,
         data.language,
@@ -21,7 +19,6 @@ export class CodeExecutedListener extends Listener<CodeExecutedEvent> {
         data.judge0Response.overallStatus
       );
       
-      // Publish the analyzed result
       await new CodeAnalyzedPublisher(natsClient.client).publish({
         id: data.id,
         userId: data.userId,
@@ -29,12 +26,10 @@ export class CodeExecutedListener extends Listener<CodeExecutedEvent> {
         userFeedback: analysis.feedback,
         analytics: analysis.analytics,
         analyzedAt: new Date().toISOString().split('T')[0],
-        status: 'completed',
+        status: 'completed'
       });
-      
     } catch (error) {
-      console.error('Failed to generate code analysis:', error);
-      return;
+      console.error('Code analysis failed:', error);
     }
   }   
 };

@@ -1,4 +1,3 @@
-
 export default () => {
   return (
     <footer className="modern-footer">
@@ -7,7 +6,7 @@ export default () => {
         <div className="footer-bottom">
           <div className="footer-left">
             <div className="copyright">
-              <p>&copy; 2024 Worksheeter. All rights reserved.</p>
+              <p>&copy; 2025 <span className="footer-brand-name"><strong>Worksheeter</strong></span>. All rights reserved.</p>
               <p className="tagline">Making every study session count.</p>
             </div>
           </div>
@@ -35,7 +34,7 @@ export default () => {
 
       <style jsx>{`
         .modern-footer {
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          background: linear-gradient(135deg,rgb(169, 183, 197) 0%,rgb(194, 207, 219) 100%);
           border-top: 1px solid rgba(99, 102, 241, 0.1);
           color: #64748b;
           margin-top: auto;
@@ -45,7 +44,7 @@ export default () => {
         .container {
           max-width: 1200px;
           margin: 0 auto;
-          padding: 4rem 2rem 2rem;
+          padding: 0.5rem 0.3rem 1.5rem;
         }
 
         .footer-content {
@@ -88,6 +87,22 @@ export default () => {
           font-size: 1.5rem;
           font-weight: 800;
           color: #1e293b;
+        }
+
+        /* Fix for footer brand name - override global CSS */
+        .footer-brand-name {
+          background: none !important;
+          -webkit-background-clip: unset !important;
+          -webkit-text-fill-color: unset !important;
+          background-clip: unset !important;
+          color: rgb(17, 17, 17) !important;
+          text-shadow: none !important;
+          filter: none !important;
+          animation: none !important;
+          letter-spacing: normal !important;
+          margin: 0 !important;
+          font-weight: inherit !important;
+          font-size: inherit !important;
         }
 
         .brand-description {
@@ -162,9 +177,8 @@ export default () => {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
           align-items: center;
-          gap: 2rem;
-          padding-top: 2rem;
-          border-top: 1px solid #e2e8f0;
+          gap: 1.5rem;
+          padding-top: 1rem;
         }
 
         .footer-left {
@@ -180,8 +194,8 @@ export default () => {
         }
 
         .copyright {
-          color: #64748b;
-          font-size: 0.85rem;
+          color:rgb(17, 17, 17);
+          font-size: 1.1rem;
         }
 
         .copyright p {
@@ -190,9 +204,9 @@ export default () => {
         }
 
         .tagline {
-          color: #6366f1;
+          color:rgb(92, 92, 94);
           font-weight: 600;
-          font-size: 0.8rem;
+          font-size: 1rem;
         }
 
         .trust-badges {
@@ -280,7 +294,7 @@ export default () => {
 
         @media (max-width: 768px) {
           .container {
-            padding: 3rem 1.5rem 1.5rem;
+            padding: 1.5rem 1.5rem 1rem;
           }
 
           .footer-links {
@@ -289,7 +303,8 @@ export default () => {
           }
 
           .footer-bottom {
-            gap: 1rem;
+            gap: 0.75rem;
+            padding-top: 0.75rem;
           }
 
           .trust-badges {
@@ -305,7 +320,7 @@ export default () => {
 
         @media (max-width: 480px) {
           .container {
-            padding: 2rem 1rem 1rem;
+            padding: 0.5rem 0.5rem 0.75rem;
           }
 
           .footer-content {

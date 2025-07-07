@@ -29,15 +29,8 @@ const start = async () => {
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
+    natsClient.setupGracefulShutdown();
 
-    natsClient.client.on('close', () => {
-      console.log('NATS connection closed!');
-      process.exit();
-    });
-
-    process.on('SIGINT', () => natsClient.client.close());
-    process.on('SIGTERM', () => natsClient.client.close());
-    
     new WorksheetGeneratedListener(natsClient.client).listen();
 
     await mongoose.connect(process.env.MONGO_URI);

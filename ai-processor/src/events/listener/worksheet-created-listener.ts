@@ -1,8 +1,8 @@
-import { Listener, Subjects, WorksheetCreatedEvent } from "@liranmazor/common";
-import { natsClient } from "../../lib/nats-client";
-import { WorksheetGeneratedPublisher } from "../publisher/worksheet-generated-publisher";
-import { claudeClient } from "../../lib/claude-client";
-import { Message } from "node-nats-streaming";
+import { Message } from 'node-nats-streaming';
+import { Subjects, Listener, WorksheetCreatedEvent } from '@liranmazor/common';
+import { WorksheetGeneratedPublisher } from '../publisher/worksheet-generated-publisher';
+import { natsClient } from '../../lib/nats-client';
+import { worksheetService } from '../../services/worksheet.service';
 
 export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
   subject: Subjects.WorksheetCreated = Subjects.WorksheetCreated;
@@ -10,24 +10,21 @@ export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
   
   async onMessage(data: WorksheetCreatedEvent['data'], msg: Message) {
     msg.ack();
-    
     try {
       const [keywordDefinitions, questionAnswers] = await Promise.all([
-        claudeClient.generateKeywordDefinitions(data.keywords, data.title),
-        claudeClient.generateQuestionAnswers(data.questions, data.keywords, data.title)
+        worksheetService.generateKeywordDefinitions(data.keywords, data.title),
+        worksheetService.generateQuestionAnswers(data.questions, data.keywords, data.title)
       ]);
-      
+
       await new WorksheetGeneratedPublisher(natsClient.client).publish({
         id: data.id,
         userId: data.userId,
-        keywordDefinitions,
-        questionAnswers,
+        keywordDefinitions: keywordDefinitions,
+        questionAnswers: questionAnswers,
         status: 'completed'
       });
-      
     } catch (error) {
-      console.error('Worksheet processing failed:', error);
-      return;
+      console.error('Worksheet generation failed:', error);
     }
   }
 }

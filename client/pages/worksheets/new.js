@@ -115,7 +115,6 @@ const NewWorksheet = ({ currentUser }) => {
               <div className="form-section">
                 <div className="section-header">
                   <h3 className="section-title">
-                    <i className="fas fa-heading me-2"></i>
                     Worksheet Title
                   </h3>
                   <p className="section-description">
@@ -325,16 +324,6 @@ const NewWorksheet = ({ currentUser }) => {
                 </h4>
               </div>
               <div className="card-content">
-                <div className="summary-stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-heading"></i>
-                  </div>
-                  <div className="stat-content">
-                    <div className="stat-label">Title</div>
-                    <div className="stat-value">{title || 'Untitled'}</div>
-                  </div>
-                </div>
-                
                 <div className="summary-stat">
                   <div className="stat-icon">
                     <i className="fas fa-key"></i>

@@ -4,6 +4,7 @@ import cookieSession from 'cookie-session';
 import { currentUser, errorHandler, rateLimiter } from '@liranmazor/common';
 import helmet from 'helmet';
 import { healthRouter } from './routes/health';
+import { thomasRouter } from './routes/thomas';
 
 const app = express();
 
@@ -27,7 +28,7 @@ app.use(
     signed: false,
     secure: false, 
     httpOnly: true, 
-    maxAge: 15 * 60 * 1000, 
+    maxAge: 5 * 60 * 60 * 1000,  
     domain: '.worksheeter.dev', 
     sameSite: 'lax'
   })
@@ -36,6 +37,8 @@ app.use(
 app.use(rateLimiter as any);
 
 app.use(currentUser);
+
+app.use(thomasRouter);
 
 app.use(errorHandler as any);
 

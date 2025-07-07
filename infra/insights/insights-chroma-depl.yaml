@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: insights-chroma-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: insights-chroma
+  template:
+    metadata:
+      labels:
+        app: insights-chroma
+    spec:
+      containers:
+        - name: insights-chroma
+          image: chromadb/chroma:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CHROMA_SERVER_HOST
+              value: "0.0.0.0"
+            - name: CHROMA_SERVER_HTTP_PORT
+              value: "8000"
+          volumeMounts:
+            - name: vector-storage
+              mountPath: /chroma/chroma
+      volumes:
+        - name: vector-storage
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: insights-chroma-srv
+spec:
+  selector:
+    app: insights-chroma
+  ports:
+    - name: insights-chroma
+      protocol: TCP
+      port: 8000
+      targetPort: 8000

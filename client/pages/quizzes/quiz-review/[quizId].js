@@ -89,17 +89,9 @@ const QuizReviewPage = ({ quiz, errors }) => {
 
   return (
     <div className={`quiz-review ${isVisible ? 'visible' : ''}`}>
-      {/* Header */}
-      <div className="header">
-        <div className="container">
-          <h1 className="title">Quiz Review</h1>
-          <p className="subtitle">Review all questions and correct answers</p>
-        </div>
-      </div>
-
       <div className="container">
         {/* Score Summary */}
-        <div className="modern-score-card">
+        <div className="score-summary-container">
           <div className="score-overview">
             <div className="quiz-header-info">
               <h2 className="quiz-title-modern">{quiz.title}</h2>
@@ -193,27 +185,6 @@ const QuizReviewPage = ({ quiz, errors }) => {
             📄 View Worksheet
           </a>
         </div>
-
-        {/* Study Tips */}
-        {quiz.score < 100 && (
-          <div className="study-tips">
-            <h4>💡 Study Tips</h4>
-            <div className="tips-grid">
-              <div className="tip">
-                <span className="tip-icon">🎯</span>
-                <span>Focus on understanding the correct answers above</span>
-              </div>
-              <div className="tip">
-                <span className="tip-icon">📖</span>
-                <span>Review the worksheet content before retaking</span>
-              </div>
-              <div className="tip">
-                <span className="tip-icon">🏆</span>
-                <span>You need 100% to unlock the next level</span>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
       <style jsx>{`
@@ -235,20 +206,6 @@ const QuizReviewPage = ({ quiz, errors }) => {
           max-width: 1000px;
           margin: 0 auto;
           padding: 0 1.5rem;
-        }
-
-        .header {
-          background: linear-gradient(135deg, #1e293b, #334155);
-          color: white;
-          padding: 2.5rem 0;
-          text-align: center;
-          margin-bottom: 2rem;
-        }
-
-        .title {
-          font-size: 2.5rem;
-          font-weight: 800;
-          margin-bottom: 0.5rem;
         }
 
         .subtitle {
@@ -298,14 +255,10 @@ const QuizReviewPage = ({ quiz, errors }) => {
           margin-bottom: 1rem;
         }
 
-        /* Modern Score Card Styles */
-        .modern-score-card {
-          background: white;
-          border-radius: 16px;
-          padding: 2rem;
+        .score-summary-container {
+          padding: 1rem 5rem;
+          border-bottom: 2px solid rgb(107, 106, 106);
           margin-bottom: 2rem;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          border: 1px solid #e5e7eb;
         }
 
         .score-overview {
@@ -626,43 +579,6 @@ const QuizReviewPage = ({ quiz, errors }) => {
         .btn.success:hover {
           transform: translateY(-1px);
           box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .study-tips {
-          background: white;
-          padding: 2rem;
-          border-radius: 16px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-          border: 1px solid #e2e8f0;
-        }
-
-        .study-tips h4 {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #1e293b;
-          margin-bottom: 1.5rem;
-          text-align: center;
-        }
-
-        .tips-grid {
-          display: grid;
-          gap: 1rem;
-        }
-
-        .tip {
-          display: flex;
-          align-items: center;
-          gap: 1rem;
-          padding: 1rem;
-          background: #f8fafc;
-          border-radius: 10px;
-          border: 1px solid #e2e8f0;
-        }
-
-        .tip-icon {
-          font-size: 1.25rem;
-          width: 40px;
-          text-align: center;
         }
 
         /* Responsive Design */
