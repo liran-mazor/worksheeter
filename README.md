@@ -31,56 +31,6 @@ Worksheeter is a modern, microservices-based educational platform that leverages
 
 ## 🏗️ Architecture
 
-### Microservices Ecosystem
-
-```mermaid
-graph TB
-    %% Frontend
-    Client[🎨 Client App]
-    
-    %% Core Services
-    Auth[🔐 Auth Service]
-    Worksheets[📚 Worksheets Service]
-    Quizzes[🧠 Quizzes Service]
-    Coding[💻 Coding Service]
-    Thomas[🤖 Thomas RAG Service]
-    AI[⚡ AI Processor]
-    Insights[📊 Insights Service]
-    
-    %% Event Bus
-    NATS[🔄 NATS Event Bus]
-    
-    %% Databases
-    MongoDB[(🗄️ MongoDB)]
-    Postgres[(🗄️ PostgreSQL)]
-    Chroma[(🔍 ChromaDB)]
-    Redis[(⚡ Redis)]
-    
-    %% Client to Services
-    Client --> Auth
-    Client --> Worksheets
-    Client --> Quizzes
-    Client --> Coding
-    Client --> Thomas
-    
-    %% Services to Event Bus
-    Auth --> NATS
-    Worksheets --> NATS
-    Quizzes --> NATS
-    Coding --> NATS
-    Thomas --> NATS
-    AI --> NATS
-    Insights --> NATS
-    
-    %% Services to Databases
-    Auth --> MongoDB
-    Worksheets --> MongoDB
-    Quizzes --> Postgres
-    Insights --> Postgres
-    Insights --> Chroma
-    AI --> Redis
-```
-
 ### Service Breakdown
 
 | Service | Technology | Purpose |
