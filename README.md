@@ -17,8 +17,11 @@ Worksheeter is a modern, microservices-based educational platform that leverages
 ### 🚀 Key Features
 
 - **🤖 AI-Powered Generation** - Intelligent content creation using Claude API
+- **🧠 Thomas RAG Assistant** - Personalized AI learning companion with vector search
 - **📚 Dynamic Worksheets** - Customizable educational materials
 - **🧠 Smart Quizzes** - Adaptive assessment generation
+- **💻 Coding Practice** - Programming challenges with AI-powered feedback
+- **📊 Learning Analytics** - Comprehensive progress tracking and insights
 - **🔐 Secure Authentication** - Robust user management
 - **⚡ Real-time Processing** - Event-driven architecture
 - **📱 Modern UI/UX** - Responsive Next.js frontend
@@ -32,29 +35,74 @@ Worksheeter is a modern, microservices-based educational platform that leverages
 
 ```mermaid
 graph TB
-    Client[Client App] --> Auth[Auth Service]
-    Client --> Worksheets[Worksheets Service]
-    Client --> Quizzes[Quizzes Service]
-    Client --> Coding[Coding Service]
+    %% Frontend Layer
+    Client[🎨 Client App<br/>Next.js Frontend]
     
-    Worksheets --> AI[AI Processor]
+    %% Core Services
+    Auth[🔐 Auth Service<br/>User Management]
+    Worksheets[📚 Worksheets Service<br/>Content Management]
+    Quizzes[🧠 Quizzes Service<br/>Assessment Generation]
+    Coding[💻 Coding Service<br/>Programming Practice]
+    Thomas[🤖 Thomas RAG Service<br/>AI Learning Assistant]
+    
+    %% AI & Processing
+    AI[⚡ AI Processor<br/>Content Generation]
+    Insights[📊 Insights Service<br/>Learning Analytics]
+    
+    %% Message Broker
+    NATS[🔄 NATS Message Broker<br/>Event Streaming]
+    
+    %% Data Layer
+    subgraph "Data Storage"
+        MongoDB[(🗄️ MongoDB<br/>Auth & Worksheets)]
+        Postgres[(🗄️ PostgreSQL<br/>Quizzes & Insights)]
+        Redis[(⚡ Redis<br/>Caching & Sessions)]
+        Chroma[(🔍 ChromaDB<br/>Vector Database)]
+    end
+    
+    %% Client Connections
+    Client --> Auth
+    Client --> Worksheets
+    Client --> Quizzes
+    Client --> Coding
+    Client --> Thomas
+    
+    %% Service to AI Processor
+    Worksheets --> AI
     Quizzes --> AI
     Coding --> AI
     
-    AI --> NATS[NATS Message Broker]
+    %% Event-Driven Communication
+    AI --> NATS
     Worksheets --> NATS
     Quizzes --> NATS
+    Coding --> NATS
+    Insights --> NATS
     
-    subgraph "Data Layer"
-        MongoDB[(MongoDB)]
-        Postgres[(PostgreSQL)]
-        Redis[(Redis)]
-    end
-    
+    %% Data Connections
     Auth --> MongoDB
     Worksheets --> MongoDB
     Quizzes --> Postgres
+    Insights --> Postgres
+    Insights --> Chroma
     AI --> Redis
+    
+    %% Thomas RAG Process
+    Thomas --> Insights
+    Insights --> Thomas
+    
+    %% Styling
+    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef service fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef ai fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef data fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef broker fill:#fce4ec,stroke:#880e4f,stroke-width:2px
+    
+    class Client frontend
+    class Auth,Worksheets,Quizzes,Coding service
+    class AI,Thomas,Insights ai
+    class MongoDB,Postgres,Redis,Chroma data
+    class NATS broker
 ```
 
 ### Service Breakdown
@@ -64,9 +112,63 @@ graph TB
 | **Auth** | Node.js + TypeScript | User authentication & authorization |
 | **Worksheets** | Node.js + TypeScript | Worksheet CRUD & management |
 | **Quizzes** | Node.js + TypeScript | Quiz generation & assessment |
-| **AI Processor** | Node.js + TypeScript | AI-powered content generation |
 | **Coding** | Node.js + TypeScript | Programming practice problems |
+| **AI Processor** | Node.js + TypeScript | AI-powered content generation |
+| **Insights** | Node.js + TypeScript | Learning analytics & data processing |
+| **Thomas** | Node.js + TypeScript | RAG-powered AI learning assistant |
 | **Client** | Next.js + React | Modern web interface |
+
+---
+
+## 🤖 Thomas: AI Learning Assistant
+
+### RAG-Powered Intelligence
+
+Thomas is our advanced AI learning assistant that provides personalized educational guidance through sophisticated Retrieval-Augmented Generation (RAG) technology.
+
+#### How Thomas Works
+
+```mermaid
+graph LR
+    User[👤 User Query] --> Thomas[🤖 Thomas RAG Service]
+    Thomas --> Query[🔍 Query Analysis]
+    Query --> Vector[🔍 Vector Search]
+    Vector --> Chroma[(🔍 ChromaDB<br/>Vector Database)]
+    Chroma --> Results[📊 Relevant Learning Data]
+    Results --> Claude[🧠 Claude AI Processing]
+    Claude --> Response[💬 Personalized Response]
+    Response --> User
+    
+    subgraph "Learning Data Sources"
+        Worksheets[📚 Worksheet Activities]
+        Quizzes[🧠 Quiz Performance]
+        Coding[💻 Code Analysis]
+    end
+    
+    Worksheets --> Vector
+    Quizzes --> Vector
+    Coding --> Vector
+    
+    style Thomas fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
+    style Chroma fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    style Claude fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+```
+
+#### Key Capabilities
+
+- **🎯 Personalized Insights** - Analyzes your learning patterns and progress
+- **📊 Performance Analytics** - Tracks quiz scores, coding challenges, and worksheet completion
+- **🧠 Cognitive Pattern Recognition** - Identifies your learning strengths and areas for improvement
+- **📈 Adaptive Recommendations** - Suggests targeted practice and study strategies
+- **💬 Natural Conversations** - Chat naturally about your educational journey
+
+#### Data Processing Pipeline
+
+1. **Event Collection** - Learning activities are captured and stored as vector embeddings
+2. **Semantic Search** - Thomas searches through your learning history using vector similarity
+3. **Context Analysis** - Relevant learning data is retrieved and analyzed
+4. **AI Generation** - Claude AI generates personalized responses based on your data
+5. **Confidence Scoring** - Response quality is assessed before delivery
 
 ---
 
@@ -182,6 +284,13 @@ worksheeter/
 │   │   ├── lib/               # Problem definitions
 │   │   └── events/            # Code analysis events
 │   └── Dockerfile
+├── 📊 insights/                # Learning analytics & RAG
+│   ├── src/
+│   │   ├── services/          # Analytics & vector services
+│   │   ├── routes/            # Thomas chat endpoints
+│   │   ├── events/            # Learning event listeners
+│   │   └── lib/               # Database & AI clients
+│   └── Dockerfile
 ├── 🎨 client/                  # Next.js frontend
 │   ├── pages/                 # Application routes
 │   ├── components/            # React components
@@ -295,12 +404,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Kubernetes** for container orchestration
 - **Next.js** for the modern React framework
 
----
-
-<div align="center">
-
-**Built with ❤️ for the educational community**
-
-[Report Bug](https://github.com/your-username/worksheeter/issues) • [Request Feature](https://github.com/your-username/worksheeter/issues) • [Documentation](https://docs.worksheeter.com)
-
-</div> 
