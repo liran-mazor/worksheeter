@@ -35,63 +35,50 @@ Worksheeter is a modern, microservices-based educational platform that leverages
 
 ```mermaid
 graph TB
-    %% Frontend Layer
-    Client[🎨 Client App<br/>Next.js Frontend]
+    %% Frontend
+    Client[🎨 Client App]
     
     %% Core Services
-    Auth[🔐 Auth Service<br/>User Management]
-    Worksheets[📚 Worksheets Service<br/>Content Management]
-    Quizzes[🧠 Quizzes Service<br/>Assessment Generation]
-    Coding[💻 Coding Service<br/>Programming Practice]
-    Thomas[🤖 Thomas RAG Service<br/>AI Learning Assistant]
+    Auth[🔐 Auth Service]
+    Worksheets[📚 Worksheets Service]
+    Quizzes[🧠 Quizzes Service]
+    Coding[💻 Coding Service]
+    Thomas[🤖 Thomas RAG Service]
+    AI[⚡ AI Processor]
+    Insights[📊 Insights Service]
     
-    %% AI & Processing
-    AI[⚡ AI Processor<br/>Content Generation]
-    Insights[📊 Insights Service<br/>Learning Analytics]
+    %% Event Bus
+    NATS[🔄 NATS Event Bus]
     
-    %% Message Broker
-    NATS[🔄 NATS Message Broker<br/>Event Streaming]
+    %% Databases
+    MongoDB[(🗄️ MongoDB)]
+    Postgres[(🗄️ PostgreSQL)]
+    Chroma[(🔍 ChromaDB)]
+    Redis[(⚡ Redis)]
     
-    %% Data Layer
-    subgraph "Data Storage"
-        MongoDB[(🗄️ MongoDB<br/>Auth & Worksheets)]
-        Postgres[(🗄️ PostgreSQL<br/>Quizzes & Insights)]
-        Redis[(⚡ Redis<br/>Caching & Sessions)]
-        Chroma[(🔍 ChromaDB<br/>Vector Database)]
-    end
-    
-    %% Client Connections
+    %% Client to Services
     Client --> Auth
     Client --> Worksheets
     Client --> Quizzes
     Client --> Coding
     Client --> Thomas
     
-    %% Service to AI Processor
-    Worksheets --> AI
-    Quizzes --> AI
-    Coding --> AI
-    
-    %% Event-Driven Communication
-    AI --> NATS
+    %% Services to Event Bus
+    Auth --> NATS
     Worksheets --> NATS
     Quizzes --> NATS
     Coding --> NATS
+    Thomas --> NATS
+    AI --> NATS
     Insights --> NATS
     
-    %% Data Connections
+    %% Services to Databases
     Auth --> MongoDB
     Worksheets --> MongoDB
     Quizzes --> Postgres
     Insights --> Postgres
     Insights --> Chroma
     AI --> Redis
-    
-    %% Thomas RAG Process
-    Thomas --> Insights
-    Insights --> Thomas
-    
-
 ```
 
 ### Service Breakdown
@@ -174,6 +161,7 @@ graph LR
 
 ### Data & Infrastructure
 - **Databases**: MongoDB, PostgreSQL
+- **Vector Database**: ChromaDB
 - **Cache**: Redis
 - **Containerization**: Docker
 - **Orchestration**: Kubernetes
