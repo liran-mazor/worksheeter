@@ -91,18 +91,7 @@ graph TB
     Thomas --> Insights
     Insights --> Thomas
     
-    %% Styling
-    classDef frontend fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef service fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef ai fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef data fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef broker fill:#fce4ec,stroke:#880e4f,stroke-width:2px
-    
-    class Client frontend
-    class Auth,Worksheets,Quizzes,Coding service
-    class AI,Thomas,Insights ai
-    class MongoDB,Postgres,Redis,Chroma data
-    class NATS broker
+
 ```
 
 ### Service Breakdown
@@ -148,10 +137,6 @@ graph LR
     Worksheets --> Vector
     Quizzes --> Vector
     Coding --> Vector
-    
-    style Thomas fill:#e8f5e8,stroke:#1b5e20,stroke-width:3px
-    style Chroma fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    style Claude fill:#e1f5fe,stroke:#01579b,stroke-width:2px
 ```
 
 #### Key Capabilities
@@ -368,39 +353,6 @@ npm run test:worksheets
 - **Metrics** - Performance monitoring and alerting
 - **Tracing** - Distributed tracing for request flows
 
----
 
-## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-### Development Workflow
-
-1. **Fork** the repository
-2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
-3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
-4. **Push** to the branch (`git push origin feature/amazing-feature`)
-5. **Open** a Pull Request
-
-### Code Standards
-
-- **TypeScript** for type safety
-- **ESLint** for code quality
-- **Prettier** for code formatting
-- **Conventional Commits** for commit messages
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- **Claude API** for AI-powered content generation
-- **NATS** for reliable message brokering
-- **Kubernetes** for container orchestration
-- **Next.js** for the modern React framework
 
