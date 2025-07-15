@@ -7,7 +7,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
   const router = useRouter();
   const [worksheet, setWorksheet] = useState(initialWorksheet);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('keywords');
+  const [selectedTab, setSelectedTab] = useState('keywords-definitions');
   const [isVisible, setIsVisible] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -197,13 +197,6 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
       <div className="worksheet-header">
         <div className="container">
           <div className="header-content">
-            <div className="breadcrumb">
-              <Link href="/worksheets" className="breadcrumb-link">
-                <i className="fas fa-arrow-left"></i>
-                Back to Worksheets
-              </Link>
-            </div>
-
             <div className="worksheet-info">
               <div className="worksheet-title-section">
                 <h1 className="worksheet-title">
@@ -217,12 +210,6 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
                     <i className="fas fa-calendar-alt"></i>
                     <span>Created: {formatDate(worksheet.createdAt)}</span>
                   </div>
-                  {worksheet.updatedAt && worksheet.updatedAt !== worksheet.createdAt && (
-                    <div className="meta-item">
-                      <i className="fas fa-edit"></i>
-                      <span>Updated: {formatDate(worksheet.updatedAt)}</span>
-                    </div>
-                  )}
                   <div className="meta-item">
                     <i className={getStatusIcon(worksheet.status)}></i>
                     <span 
@@ -260,86 +247,38 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           {/* Tabs */}
           <div className="content-tabs">
             <button
-              className={`tab-button ${selectedTab === 'keywords' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('keywords')}
+              className={`tab-button ${selectedTab === 'keywords-definitions' ? 'active' : ''}`}
+              onClick={() => setSelectedTab('keywords-definitions')}
             >
               <i className="fas fa-key"></i>
-              Keywords ({worksheet.keywords?.length || 0})
+              Keywords & Definitions ({worksheet.keywords?.length || 0})
             </button>
             <button
-              className={`tab-button ${selectedTab === 'questions' ? 'active' : ''}`}
-              onClick={() => setSelectedTab('questions')}
+              className={`tab-button ${selectedTab === 'questions-answers' ? 'active' : ''}`}
+              onClick={() => setSelectedTab('questions-answers')}
             >
               <i className="fas fa-question-circle"></i>
-              Questions ({worksheet.questions?.length || 0})
+              Questions & Answers ({worksheet.questions?.length || 0})
             </button>
-            {worksheet.keywordDefinitions?.length > 0 && (
-              <button
-                className={`tab-button ${selectedTab === 'definitions' ? 'active' : ''}`}
-                onClick={() => setSelectedTab('definitions')}
-              >
-                <i className="fas fa-book"></i>
-                Definitions ({worksheet.keywordDefinitions.length})
-              </button>
-            )}
-            {worksheet.questionAnswers?.length > 0 && (
-              <button
-                className={`tab-button ${selectedTab === 'answers' ? 'active' : ''}`}
-                onClick={() => setSelectedTab('answers')}
-              >
-                <i className="fas fa-lightbulb"></i>
-                Answers ({worksheet.questionAnswers.length})
-              </button>
-            )}
           </div>
 
           {/* Tab Content */}
           <div className="tab-content">
-            {selectedTab === 'keywords' && (
-              <div className="keywords-section">
-                <div className="section-header">
-                  <h2>Keywords</h2>
-                  <p>Key terms and concepts from your worksheet</p>
-                </div>
-                <div className="keywords-grid">
-                  {worksheet.keywords?.map((keyword, index) => (
-                    <div key={index} className="keyword-card">
-                      <div className="keyword-text">{keyword}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {selectedTab === 'questions' && (
-              <div className="questions-section">
-                <div className="section-header">
-                  <h2>Questions</h2>
-                  <p>Questions you can ask about this worksheet</p>
-                </div>
-                <div className="questions-list">
-                  {worksheet.questions?.map((question, index) => (
-                    <div key={index} className="question-card">
-                      <div className="question-number">{index + 1}</div>
-                      <div className="question-text">{question}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {selectedTab === 'definitions' && (
-              <div className="definitions-section">
-                <div className="section-header">
-                  <h2>Keyword Definitions</h2>
-                  <p>AI-generated definitions for your keywords</p>
+            {selectedTab === 'keywords-definitions' && (
+              <div className="keywords-definitions-section">
+                {/* Keywords & Definitions Section */}
+                <div className="section-header" style={{ marginTop: '3rem' }}>
+                  <h2>Keywords & Definitions</h2>
                 </div>
                 {worksheet.keywordDefinitions?.length > 0 ? (
                   <div className="definitions-list">
                     {worksheet.keywordDefinitions.map((def, index) => (
                       <div key={index} className="definition-card">
-                        <h3 className="definition-keyword">{def.keyword}</h3>
-                        <p className="definition-text">{def.definition}</p>
+                        <div className="definition-number">{index + 1}</div>
+                        <div className="definition-content">
+                          <h3 className="definition-keyword">{def.keyword}</h3>
+                          <p className="definition-text">{def.definition}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -365,18 +304,21 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
               </div>
             )}
 
-            {selectedTab === 'answers' && (
-              <div className="answers-section">
-                <div className="section-header">
-                  <h2>Question Answers</h2>
-                  <p>AI-generated answers to your questions</p>
+            {selectedTab === 'questions-answers' && (
+              <div className="questions-answers-section">
+                {/* Questions & Answers Section */}
+                <div className="section-header" style={{ marginTop: '3rem' }}>
+                  <h2>Question & Answers</h2>
                 </div>
                 {worksheet.questionAnswers?.length > 0 ? (
                   <div className="answers-list">
                     {worksheet.questionAnswers.map((qa, index) => (
                       <div key={index} className="answer-card">
-                        <h3 className="answer-question">{qa.question}</h3>
-                        <p className="answer-text">{qa.answer}</p>
+                        <div className="answer-number">{index + 1}</div>
+                        <div className="answer-content">
+                          <h3 className="answer-question">{qa.question}</h3>
+                          <p className="answer-text">{qa.answer}</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -507,7 +449,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         }
 
         .worksheet-title {
-          font-size: 2.5rem;
+          font-size: 3rem;
           font-weight: 800;
           color: #1e293b;
           margin-bottom: 1rem;
@@ -527,7 +469,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           align-items: center;
           gap: 0.5rem;
           color: #64748b;
-          font-size: 0.9rem;
+          font-size: 1.1rem;
         }
 
         .meta-item i {
@@ -538,7 +480,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         .status-badge {
           padding: 0.25rem 0.75rem;
           border-radius: 12px;
-          font-size: 0.8rem;
+          font-size: 1rem;
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.5px;
@@ -561,7 +503,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          font-size: 0.9rem;
+          font-size: 1.1rem;
         }
 
         .btn-primary {
@@ -589,14 +531,20 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         }
 
         .btn-danger {
-          background: #fee2e2;
-          color: #dc2626;
-          border: 1px solid #fecaca;
+          background: transparent;
+          color: #64748b;
+          border: 1px solid transparent;
+          transition: all 0.2s ease;
+          font-size: 1.1rem;
+          font-weight: 500;
         }
 
         .btn-danger:hover:not(:disabled) {
-          background: #fecaca;
-          color: #b91c1c;
+          background: rgba(220, 38, 38, 0.1);
+          border-color: rgba(220, 38, 38, 0.3);
+          color: #dc2626;
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+          transform: translateY(-1px);
         }
 
         .btn-outline {
@@ -644,6 +592,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           cursor: pointer;
           border-bottom: 2px solid transparent;
           transition: all 0.2s ease;
+          font-size: 1.3rem;
         }
 
         .tab-button:hover {
@@ -666,7 +615,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         }
 
         .section-header h2 {
-          font-size: 1.75rem;
+          font-size: 2.4rem;
           font-weight: 700;
           color: #1e293b;
           margin-bottom: 0.5rem;
@@ -675,31 +624,44 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         .section-header p {
           color: #64748b;
           margin: 0;
+          font-size: 1.15rem;
         }
 
-        .keywords-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        .keywords-list {
+          display: flex;
+          flex-direction: column;
           gap: 1rem;
         }
 
-        .keyword-card {
+        .keyword-item-card {
           background: white;
           border: 1px solid #e2e8f0;
           border-radius: 12px;
-          padding: 1rem;
-          transition: all 0.2s ease;
+          padding: 1.5rem;
+          display: flex;
+          gap: 1rem;
+          align-items: center;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
-        .keyword-card:hover {
-          border-color: #6366f1;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        .keyword-number {
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          color: white;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 1.1rem;
+          flex-shrink: 0;
         }
 
         .keyword-text {
           font-weight: 600;
           color: #1e293b;
+          font-size: 1.3rem;
         }
 
         .questions-list {
@@ -728,7 +690,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           align-items: center;
           justify-content: center;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 1.1rem;
           flex-shrink: 0;
         }
 
@@ -736,6 +698,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           color: #1e293b;
           font-weight: 500;
           line-height: 1.6;
+          font-size: 1.3rem;
         }
 
         .definitions-list,
@@ -751,12 +714,35 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           border: 1px solid #e2e8f0;
           border-radius: 12px;
           padding: 1.5rem;
+          display: flex;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .definition-number,
+        .answer-number {
+          background: linear-gradient(135deg, #6366f1, #8b5cf6);
+          color: white;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 600;
+          font-size: 1.1rem;
+          flex-shrink: 0;
+        }
+
+        .definition-content,
+        .answer-content {
+          flex: 1;
         }
 
         .definition-keyword,
         .answer-question {
           color: #1e293b;
-          font-size: 1.1rem;
+          font-size: 1.5rem;
           font-weight: 700;
           margin-bottom: 0.75rem;
         }
@@ -766,6 +752,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           color: #64748b;
           line-height: 1.6;
           margin: 0;
+          font-size: 1.3rem;
         }
 
         .empty-content {
@@ -790,7 +777,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         }
 
         .empty-content h3 {
-          font-size: 1.5rem;
+          font-size: 1.8rem;
           font-weight: 700;
           color: #1e293b;
           margin-bottom: 1rem;
@@ -799,6 +786,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
         .empty-content p {
           color: #64748b;
           margin-bottom: 2rem;
+          font-size: 1.15rem;
         }
 
         @media (max-width: 768px) {
@@ -812,7 +800,7 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
           }
 
           .worksheet-title {
-            font-size: 2rem;
+            font-size: 2.5rem;
             flex-direction: column;
             align-items: flex-start;
             gap: 0.5rem;
@@ -828,8 +816,11 @@ const WorksheetDetail = ({ currentUser, worksheet: initialWorksheet }) => {
             flex-wrap: wrap;
           }
 
-          .keywords-grid {
-            grid-template-columns: 1fr;
+          .keyword-item-card,
+          .definition-card,
+          .answer-card {
+            flex-direction: column;
+            text-align: center;
           }
 
           .question-card {

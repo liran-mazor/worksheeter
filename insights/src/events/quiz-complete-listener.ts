@@ -1,6 +1,5 @@
 import { Listener, QuizCompleteEvent, Subjects } from "@liranmazor/common";
 import { Message } from "node-nats-streaming";
-import { quizService } from "../services/quiz.service";
 import { vectorService } from "../services/vector.service";
 
 export class QuizCompleteListener extends Listener<QuizCompleteEvent> {
@@ -9,11 +8,17 @@ export class QuizCompleteListener extends Listener<QuizCompleteEvent> {
   
   async onMessage(data: QuizCompleteEvent['data'], msg: Message) {
     try {
-      await quizService.processQuizCompleteEvent(data);
+      await vectorService.storeQuizCompletionEvent({
+        userId: data.userId,
+        worksheetId: data.worksheetId,
+        worksheetTitle: data.worksheetTitle,
+        difficulty: data.difficulty,
+        score: data.score,
+        completedAt: data.completedAt
+      });
 
-      await vectorService.storeQuizCompletionEvent(data);
     } catch (error) {
-      console.error(`Error processing quiz complete event:`, error);
+      console.error('❌ Error processing quiz complete event:', error);
       return;
     }
     msg.ack();

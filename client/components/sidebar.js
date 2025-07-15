@@ -1,10 +1,16 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 export default ({ currentUser }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const router = useRouter();
+
+  // Always enable dark mode
+  useEffect(() => {
+    document.documentElement.classList.add('dark-mode');
+    document.body.classList.add('dark-mode');
+  }, []);
 
   if (!currentUser) {
     return null;
@@ -15,7 +21,8 @@ export default ({ currentUser }) => {
       label: 'Dashboard', 
       href: '/', 
       icon: 'fas fa-home',
-      tooltip: 'Home'
+      description: 'Overview & quick actions',
+      tooltip: 'Go to your dashboard overview'
     },
     { 
       label: 'Chat with Thomas', 
@@ -53,9 +60,10 @@ export default ({ currentUser }) => {
     if (href === '/') {
       return router.pathname === '/';
     }
-    // Exact match for /worksheets to avoid conflict with /worksheets/new
+    // Special handling for worksheets to include detail pages but exclude /worksheets/new
     if (href === '/worksheets') {
-      return router.pathname === '/worksheets';
+      return router.pathname === '/worksheets' || 
+             (router.pathname.startsWith('/worksheets/') && router.pathname !== '/worksheets/new');
     }
     return router.pathname.startsWith(href);
   };
@@ -133,8 +141,8 @@ export default ({ currentUser }) => {
           left: 0;
           height: 100vh;
           width: 280px;
-          background: linear-gradient(180deg, #fafbfc 0%, #ffffff 100%);
-          border-right: 1px solid #e5e7eb;
+          background: var(--sidebar-bg);
+          border-right: 1px solid var(--sidebar-border);
           display: flex;
           flex-direction: column;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -149,7 +157,7 @@ export default ({ currentUser }) => {
         /* Sidebar Header */
         .sidebar-header {
           padding: 1.5rem;
-          border-bottom: 1px solid #f1f5f9;
+          border-bottom: 1px solid var(--sidebar-footer-border);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -222,7 +230,7 @@ export default ({ currentUser }) => {
         }
 
         .sidebar-logo:hover .logo-icon::after {
-          content: '→';
+          content: '←';
           position: absolute;
           top: 50%;
           left: 50%;
@@ -232,6 +240,10 @@ export default ({ currentUser }) => {
           font-weight: bold;
           z-index: 3;
           opacity: 1;
+        }
+
+        .sidebar.collapsed .sidebar-logo:hover .logo-icon::after {
+          content: '→';
         }
 
         .logo-text {
@@ -246,7 +258,7 @@ export default ({ currentUser }) => {
         .sidebar .brand-name {
           font-size: 1.3rem !important;
           font-weight: 800 !important;
-          color: #1f2937 !important;
+          color: var(--text-primary) !important;
           text-decoration: none !important;
           background: none !important;
           -webkit-background-clip: unset !important;
@@ -261,7 +273,7 @@ export default ({ currentUser }) => {
 
         .brand-tagline {
           font-size: 0.75rem;
-          color: #6b7280;
+          color: var(--text-secondary);
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.05em;
@@ -287,7 +299,7 @@ export default ({ currentUser }) => {
           padding: 0.75rem;
           border-radius: 12px;
           text-decoration: none;
-          color: #64748b;
+          color: var(--text-secondary);
           transition: all 0.2s ease;
           position: relative;
           border: 1px solid transparent;
@@ -296,7 +308,7 @@ export default ({ currentUser }) => {
         .nav-item:hover {
           background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.03));
           border-color: rgba(99, 102, 241, 0.1);
-          color: #374151;
+          color: var(--text-primary);
           text-decoration: none;
           transform: translateX(2px);
         }
@@ -310,21 +322,6 @@ export default ({ currentUser }) => {
         .nav-item.active:hover {
           background: linear-gradient(135deg, #5b21b6 0%, #7c3aed 100%);
           transform: translateX(2px);
-        }
-
-        /* Dashboard (homepage) should have no background when active */
-        .nav-item[href="/"].active {
-          background: transparent;
-          color: #64748b;
-          box-shadow: none;
-        }
-
-        .nav-item[href="/"].active:hover {
-          background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.03));
-          border-color: rgba(99, 102, 241, 0.1);
-          color: #374151;
-          transform: translateX(2px);
-          box-shadow: none;
         }
 
         .nav-icon {
@@ -395,7 +392,7 @@ export default ({ currentUser }) => {
         }
 
         .nav-label {
-          font-size: 1rem;
+          font-size: 1.15rem;
           font-weight: 600;
         }
 
@@ -412,7 +409,7 @@ export default ({ currentUser }) => {
         /* Sidebar Footer */
         .sidebar-footer {
           padding: 1rem;
-          border-top: 1px solid #f1f5f9;
+          border-top: 1px solid var(--sidebar-footer-border);
           display: flex;
           flex-direction: column;
           gap: 0.75rem;
@@ -423,15 +420,15 @@ export default ({ currentUser }) => {
           align-items: center;
           gap: 0.75rem;
           padding: 0.75rem;
-          background: #f8fafc;
-          border: 1px solid #e2e8f0;
+          background: var(--bg-surface-hover);
+          border: 1px solid var(--border-color);
           border-radius: 12px;
           transition: all 0.2s ease;
         }
 
         .user-profile:hover {
-          background: #f1f5f9;
-          border-color: #cbd5e1;
+          background: var(--bg-secondary);
+          border-color: var(--border-color-hover);
         }
 
         .user-avatar {
@@ -457,14 +454,36 @@ export default ({ currentUser }) => {
         .user-name {
           font-size: 0.85rem;
           font-weight: 600;
-          color: #374151;
+          color: var(--text-primary);
           truncate: true;
         }
 
         .user-email {
           font-size: 0.75rem;
-          color: #6b7280;
+          color: var(--text-secondary);
           truncate: true;
+        }
+
+        .dark-mode-toggle {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          border-radius: 12px;
+          background: transparent;
+          border: 1px solid transparent;
+          color: var(--text-secondary);
+          transition: all 0.2s ease;
+          font-size: 0.85rem;
+          font-weight: 500;
+          cursor: pointer;
+          width: 100%;
+        }
+
+        .dark-mode-toggle:hover {
+          background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.03));
+          border-color: rgba(99, 102, 241, 0.1);
+          color: #6366f1;
         }
 
         .signout-btn {
@@ -474,18 +493,20 @@ export default ({ currentUser }) => {
           padding: 0.75rem;
           border-radius: 12px;
           text-decoration: none;
-          color: #6b7280;
+          color: var(--text-secondary);
           transition: all 0.2s ease;
-          font-size: 0.85rem;
+          font-size: 1.1rem;
           font-weight: 500;
           border: 1px solid transparent;
         }
 
         .signout-btn:hover {
-          background: #fef2f2;
-          border-color: #fecaca;
+          background: rgba(220, 38, 38, 0.1);
+          border-color: rgba(220, 38, 38, 0.3);
           color: #dc2626;
           text-decoration: none;
+          box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+          transform: translateY(-1px);
         }
 
         /* Content Spacer */
@@ -511,6 +532,11 @@ export default ({ currentUser }) => {
         }
 
         .sidebar.collapsed .signout-btn {
+          justify-content: center;
+          padding: 0.75rem 0.5rem;
+        }
+
+        .sidebar.collapsed .dark-mode-toggle {
           justify-content: center;
           padding: 0.75rem 0.5rem;
         }

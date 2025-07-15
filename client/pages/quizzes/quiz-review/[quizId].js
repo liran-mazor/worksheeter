@@ -92,36 +92,22 @@ const QuizReviewPage = ({ quiz, errors }) => {
       <div className="container">
         {/* Score Summary */}
         <div className="score-summary-container">
-          <div className="score-overview">
-            <div className="quiz-header-info">
-              <h2 className="quiz-title-modern">{quiz.title}</h2>
-                <span className={`difficulty-tag difficulty-${quiz.difficulty}`}>
-                  {quiz.difficulty?.charAt(0).toUpperCase() + quiz.difficulty?.slice(1)}
-                </span>
-              <div className="quiz-metadata">
-                <span className="completion-date">{formatDate(quiz.completedAt)}</span>
-              </div>
-
-            </div>
-            
-            <div className="score-summary">
-              <div className="primary-score">
-                <span className="score-value" style={{ color: getScoreColor(quiz.score) }}>
-                  {quiz.score}%
-                </span>
-                <span className="score-subtitle">Final Score</span>
+          <div className="quiz-card">
+            <div className="quiz-header">
+              <div className="quiz-info">
+                <h2 className="quiz-title">{quiz.title}</h2>
+                <div className="quiz-meta">
+                  <span className={`difficulty-badge difficulty-${quiz.difficulty}`}>
+                    {quiz.difficulty?.charAt(0).toUpperCase() + quiz.difficulty?.slice(1)}
+                  </span>
+                </div>
               </div>
               
-              <div className="score-breakdown">
-                <div className="breakdown-item">
-                  <span className="breakdown-number correct-number">{correctCount}</span>
-                  <span className="breakdown-label">Correct</span>
+              <div className="score-display">
+                <div className="score-main" style={{ color: getScoreColor(quiz.score) }}>
+                  {quiz.score}%
                 </div>
-                <div className="breakdown-divider">/</div>
-                <div className="breakdown-item">
-                  <span className="breakdown-number total-number">{totalQuestions}</span>
-                  <span className="breakdown-label">Total</span>
-                </div>
+                <div className="completion-date">{formatDate(quiz.completedAt)}</div>
               </div>
             </div>
           </div>
@@ -181,7 +167,7 @@ const QuizReviewPage = ({ quiz, errors }) => {
           <a href="/quizzes" className="btn primary">
             📊 Quiz Dashboard
           </a>
-          <a href={`/worksheets/${quiz.worksheetId}`} className="btn secondary">
+          <a href={`/worksheets/${quiz.worksheetId}`} className="btn primary">
             📄 View Worksheet
           </a>
         </div>
@@ -190,7 +176,7 @@ const QuizReviewPage = ({ quiz, errors }) => {
       <style jsx>{`
         .quiz-review {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
           opacity: 0;
           transform: translateY(20px);
           transition: all 0.6s ease;
@@ -238,11 +224,12 @@ const QuizReviewPage = ({ quiz, errors }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
 
         .error-message {
-          background: white;
+          background: #334155;
+          color: #f1f5f9;
           padding: 3rem;
           border-radius: 16px;
           text-align: center;
@@ -256,131 +243,85 @@ const QuizReviewPage = ({ quiz, errors }) => {
         }
 
         .score-summary-container {
-          padding: 1rem 5rem;
-          border-bottom: 2px solid rgb(107, 106, 106);
-          margin-bottom: 2rem;
+          margin-bottom: 3rem;
+          margin-top: 3rem;
         }
 
-        .score-overview {
+        .quiz-card {
+          background: #334155;
+          border-radius: 16px;
+          padding: 2rem;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          border: 1px solid #475569;
+          color: #f1f5f9;
+        }
+
+        .quiz-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 2rem;
+          gap: 2rem;
         }
 
-        .quiz-header-info {
+        .quiz-info {
           flex: 1;
         }
 
-        .quiz-title-modern {
-          font-size: 1.75rem;
-          font-weight: 700;
-          color: #111827;
-          margin: 0 0 1rem 0;
-          line-height: 1.2;
+        .quiz-title {
+          font-size: 2.2rem;
+          font-weight: 600;
+          color: #f1f5f9;
+          margin: 0 0 0.75rem 0;
+          line-height: 1.3;
         }
 
-        .quiz-metadata {
-        padding: 7px;
+        .quiz-meta {
           display: flex;
           align-items: center;
           gap: 1rem;
+          flex-wrap: wrap;
         }
 
-        .difficulty-tag {
-          padding: 0.35rem 0.50rem;
-          border-radius: 6px;
-          font-size: 1.2rem;
+        .difficulty-badge {
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 1rem;
           font-weight: 600;
           text-transform: uppercase;
           letter-spacing: 0.025em;
         }
 
         .difficulty-beginner {
-          background:rgb(181, 126, 49);
-          color:rgb(236, 235, 233);
+          background: #10b981;
+          color: white;
         }
 
         .difficulty-intermediate {
-          background:rgb(145, 143, 139);
-          color:rgb(236, 235, 233);
+          background: #f59e0b;
+          color: white;
         }
 
         .difficulty-advanced {
-          background:rgb(229, 206, 73);
-          color:rgb(236, 235, 233);
+          background: #ef4444;
+          color: white;
         }
 
         .completion-date {
-          color: #6b7280;
-          font-size: 0.875rem;
+          color: #cbd5e1;
+          font-size: 1.2rem;
           font-weight: 500;
         }
 
-        .score-summary {
-          text-align: right;
-        }
-
-        .primary-score {
-          margin-bottom: 1rem;
-        }
-
-        .score-value {
-          display: block;
-          font-size: 3rem;
-          font-weight: 800;
-          line-height: 1;
-          margin-bottom: 0.25rem;
-        }
-
-        .score-subtitle {
-          color: #6b7280;
-          font-size: 0.875rem;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-        }
-
-        .score-breakdown {
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          gap: 0.75rem;
-        }
-
-        .breakdown-item {
+        .score-display {
           text-align: center;
+          min-width: 120px;
         }
 
-        .breakdown-number {
-          display: block;
-          font-size: 1.5rem;
+        .score-main {
+          font-size: 2.5rem;
           font-weight: 700;
           line-height: 1;
-        }
-
-        .correct-number {
-          color: #059669;
-        }
-
-        .total-number {
-          color: #374151;
-        }
-
-        .breakdown-label {
-          display: block;
-          font-size: 0.75rem;
-          color: #6b7280;
-          font-weight: 500;
-          text-transform: uppercase;
-          letter-spacing: 0.025em;
-          margin-top: 0.25rem;
-        }
-
-        .breakdown-divider {
-          font-size: 1.5rem;
-          color: #d1d5db;
-          font-weight: 300;
+          margin-bottom: 0.5rem;
         }
 
         .progress-container {
@@ -415,7 +356,7 @@ const QuizReviewPage = ({ quiz, errors }) => {
         .section-title {
           font-size: 1.5rem;
           font-weight: 700;
-          color: #1e293b;
+          color: #f1f5f9;
           margin-bottom: 1.5rem;
           text-align: center;
         }
@@ -426,22 +367,17 @@ const QuizReviewPage = ({ quiz, errors }) => {
         }
 
         .question-item {
-          background: white;
+          background: #334155;
+          color: #f1f5f9;
           border-radius: 16px;
           overflow: hidden;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
           border: 3px solid;
-          transition: all 0.3s ease;
         }
 
         .question-item.review {
           border-color: #6366f1;
           background: linear-gradient(135deg, #ffffff 0%, #f0f4ff 100%);
-        }
-
-        .question-item:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
         .question-header {
@@ -477,6 +413,14 @@ const QuizReviewPage = ({ quiz, errors }) => {
           color: #2563eb;
         }
 
+        .result-indicator.correct {
+          color: #10b981;
+        }
+
+        .result-indicator.wrong {
+          color: #ef4444;
+        }
+
         .icon {
           font-size: 1.25rem;
         }
@@ -488,7 +432,7 @@ const QuizReviewPage = ({ quiz, errors }) => {
         .question-text {
           font-size: 1.1rem;
           font-weight: 600;
-          color: #1e293b;
+          color: #f1f5f9;
           margin-bottom: 1.25rem;
           line-height: 1.5;
         }
@@ -496,17 +440,17 @@ const QuizReviewPage = ({ quiz, errors }) => {
         /* Remove all options-related styles */
 
         .answer-section {
-          background: #f8fafc;
+          background: #475569;
           padding: 1rem;
           border-radius: 12px;
-          border: 1px solid #e2e8f0;
+          border: 1px solid #475569;
           margin-bottom: 1rem;
         }
 
         .answer-label {
           font-size: 0.85rem;
           font-weight: 600;
-          color: #64748b;
+          color: #cbd5e1;
           text-transform: uppercase;
           letter-spacing: 0.5px;
           margin-bottom: 0.5rem;
@@ -515,8 +459,8 @@ const QuizReviewPage = ({ quiz, errors }) => {
         .correct-answer {
           font-size: 1rem;
           font-weight: 600;
-          color: #059669;
-          background: white;
+          color: #10b981;
+          background: #334155;
           padding: 0.75rem;
           border-radius: 8px;
           border: 2px solid #10b981;
@@ -551,6 +495,7 @@ const QuizReviewPage = ({ quiz, errors }) => {
         }
 
         .btn.primary:hover {
+          background: linear-gradient(135deg, #5855eb, #7c3aed);
           transform: translateY(-1px);
           box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
           text-decoration: none;
@@ -580,6 +525,8 @@ const QuizReviewPage = ({ quiz, errors }) => {
           transform: translateY(-1px);
           box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
         }
+
+
 
         /* Responsive Design */
         @media (max-width: 768px) {

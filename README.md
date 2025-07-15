@@ -1,62 +1,122 @@
-# Worksheeter
+# 🎓 Worksheeter
 
-A microservices-based platform for generating and managing educational worksheets and quizzes using AI.
+> **AI-Powered Educational Platform**  
+> Generate intelligent worksheets and quizzes with advanced microservices architecture
 
-## Architecture
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/typescript-5.0%2B-blue.svg)](https://www.typescriptlang.org/)
+[![Kubernetes](https://img.shields.io/badge/kubernetes-1.25%2B-blue.svg)](https://kubernetes.io/)
 
-This project follows a microservices architecture with the following services:
+---
 
-### Core Services
+## ✨ Overview
 
-- **Auth Service** (`auth/`) - User authentication and authorization
-- **Worksheets Service** (`worksheets/`) - Worksheet management and CRUD operations
-- **Quizzes Service** (`quizzes/`) - Quiz management and generation
-- **AI Processor Service** (`ai-processor/`) - AI-powered content generation
-- **Client** (`client/`) - Next.js frontend application
+Worksheeter is a modern, microservices-based educational platform that leverages AI to automatically generate personalized worksheets and quizzes. Built with scalability and performance in mind, it provides educators and students with intelligent learning materials.
 
-### Shared Components
+### 🚀 Key Features
 
-- **Common Package** (`common/`) - Shared utilities, events, and middleware (published as npm package)
+- **🤖 AI-Powered Generation** - Intelligent content creation using Claude API
+- **📚 Dynamic Worksheets** - Customizable educational materials
+- **🧠 Smart Quizzes** - Adaptive assessment generation
+- **🔐 Secure Authentication** - Robust user management
+- **⚡ Real-time Processing** - Event-driven architecture
+- **📱 Modern UI/UX** - Responsive Next.js frontend
+- **🐳 Cloud-Native** - Kubernetes-ready deployment
 
-### Infrastructure
+---
 
-- **Kubernetes** (`infra/k8s/`) - Deployment configurations
-- **Skaffold** (`skaffold.yaml`) - Development workflow automation
+## 🏗️ Architecture
 
-## Technology Stack
+### Microservices Ecosystem
 
-- **Backend**: Node.js, TypeScript, Express.js
-- **Frontend**: Next.js, React
-- **Database**: MongoDB
+```mermaid
+graph TB
+    Client[Client App] --> Auth[Auth Service]
+    Client --> Worksheets[Worksheets Service]
+    Client --> Quizzes[Quizzes Service]
+    Client --> Coding[Coding Service]
+    
+    Worksheets --> AI[AI Processor]
+    Quizzes --> AI
+    Coding --> AI
+    
+    AI --> NATS[NATS Message Broker]
+    Worksheets --> NATS
+    Quizzes --> NATS
+    
+    subgraph "Data Layer"
+        MongoDB[(MongoDB)]
+        Postgres[(PostgreSQL)]
+        Redis[(Redis)]
+    end
+    
+    Auth --> MongoDB
+    Worksheets --> MongoDB
+    Quizzes --> Postgres
+    AI --> Redis
+```
+
+### Service Breakdown
+
+| Service | Technology | Purpose |
+|---------|------------|---------|
+| **Auth** | Node.js + TypeScript | User authentication & authorization |
+| **Worksheets** | Node.js + TypeScript | Worksheet CRUD & management |
+| **Quizzes** | Node.js + TypeScript | Quiz generation & assessment |
+| **AI Processor** | Node.js + TypeScript | AI-powered content generation |
+| **Coding** | Node.js + TypeScript | Programming practice problems |
+| **Client** | Next.js + React | Modern web interface |
+
+---
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Runtime**: Node.js 18+
+- **Language**: TypeScript
+- **Framework**: Express.js
 - **Message Broker**: NATS
-- **AI**: Claude API
+- **AI Integration**: Claude API
+
+### Frontend
+- **Framework**: Next.js 13+
+- **UI Library**: React 18+
+- **Styling**: CSS-in-JS + Tailwind
+- **State Management**: React Hooks
+
+### Data & Infrastructure
+- **Databases**: MongoDB, PostgreSQL
+- **Cache**: Redis
 - **Containerization**: Docker
 - **Orchestration**: Kubernetes
 - **Development**: Skaffold
 
-## Getting Started
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js (v18+)
-- Docker
-- Kubernetes cluster (Minikube, Docker Desktop, or cloud provider)
-- Skaffold CLI
+- **Node.js** 18.0.0 or higher
+- **Docker** Desktop or Docker Engine
+- **Kubernetes** cluster (Minikube, Docker Desktop, or cloud)
+- **Skaffold** CLI
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/your-username/worksheeter.git
    cd worksheeter
    ```
 
-2. **Install dependencies for all services**
+2. **Install dependencies**
    ```bash
-   # Install common package dependencies
-   cd common && npm install && cd ..
+   # Install all service dependencies
+   npm run install:all
    
-   # Install service dependencies
+   # Or install individually
    cd auth && npm install && cd ..
    cd worksheets && npm install && cd ..
    cd quizzes && npm install && cd ..
@@ -64,50 +124,183 @@ This project follows a microservices architecture with the following services:
    cd client && npm install && cd ..
    ```
 
-3. **Set up environment variables**
-   Create `.env` files in each service directory with required environment variables.
-
-4. **Start the development environment**
+3. **Environment setup**
    ```bash
-   skaffold dev
+   # Copy environment templates
+   cp auth/.env.example auth/.env
+   cp worksheets/.env.example worksheets/.env
+   cp quizzes/.env.example quizzes/.env
+   cp ai-processor/.env.example ai-processor/.env
+   cp client/.env.example client/.env
+   
+   # Configure your environment variables
+   # (API keys, database URLs, etc.)
    ```
 
-### Development
+4. **Start development environment**
+   ```bash
+   # Full-stack development with Kubernetes
+   skaffold dev
+   
+   # Or run services individually
+   npm run dev:all
+   ```
 
-- **Local Development**: Each service can be run independently using `npm run dev`
-- **Kubernetes Development**: Use `skaffold dev` for full-stack development
-- **Production Deployment**: Use `skaffold run` for production deployment
+---
 
-## Service Communication
-
-Services communicate through:
-- **HTTP APIs** for synchronous requests
-- **NATS Events** for asynchronous communication
-- **Shared npm package** for common utilities and types
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 worksheeter/
-├── auth/                 # Authentication service
-├── worksheets/           # Worksheet management service
-├── quizzes/             # Quiz management service
-├── ai-processor/        # AI content generation service
-├── client/              # Next.js frontend
-├── common/              # Shared utilities (npm package)
-├── infra/
-│   └── k8s/            # Kubernetes manifests
-└── skaffold.yaml       # Skaffold configuration
+├── 📦 auth/                    # Authentication service
+│   ├── src/
+│   │   ├── routes/            # API endpoints
+│   │   ├── models/            # User models
+│   │   └── lib/               # Utilities
+│   └── Dockerfile
+├── 📚 worksheets/              # Worksheet management
+│   ├── src/
+│   │   ├── routes/            # CRUD operations
+│   │   ├── models/            # Worksheet models
+│   │   └── events/            # Event publishers/listeners
+│   └── Dockerfile
+├── 🧠 quizzes/                 # Quiz generation service
+│   ├── src/
+│   │   ├── routes/            # Quiz endpoints
+│   │   ├── services/          # Business logic
+│   │   └── events/            # Event handling
+│   └── Dockerfile
+├── 🤖 ai-processor/            # AI content generation
+│   ├── src/
+│   │   ├── services/          # AI integration
+│   │   ├── events/            # Event processing
+│   │   └── types/             # Type definitions
+│   └── Dockerfile
+├── 💻 coding/                  # Programming practice
+│   ├── src/
+│   │   ├── routes/            # Code execution
+│   │   ├── lib/               # Problem definitions
+│   │   └── events/            # Code analysis events
+│   └── Dockerfile
+├── 🎨 client/                  # Next.js frontend
+│   ├── pages/                 # Application routes
+│   ├── components/            # React components
+│   ├── hooks/                 # Custom hooks
+│   └── styles/                # Styling
+├── 🏗️ infra/                   # Infrastructure
+│   ├── auth/                  # Auth service K8s configs
+│   ├── worksheets/            # Worksheets K8s configs
+│   ├── quizzes/               # Quizzes K8s configs
+│   ├── shared/                # Shared K8s resources
+│   └── k8s/                   # Kubernetes manifests
+└── 📄 skaffold.yaml           # Skaffold configuration
 ```
 
-## Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+## 🔄 Service Communication
 
-## License
+### Synchronous Communication
+- **HTTP REST APIs** for direct service-to-service calls
+- **Standardized response formats** across all services
 
-[Your License Here] 
+### Asynchronous Communication
+- **NATS Message Broker** for event-driven architecture
+- **Event-driven workflows** for AI processing and content generation
+- **Reliable message delivery** with retry mechanisms
+
+### Event Flow
+```
+User Action → Service → Event Published → AI Processor → Content Generated → Event Published → Service Updated
+```
+
+---
+
+## 🧪 Development
+
+### Local Development
+```bash
+# Run individual services
+npm run dev:auth
+npm run dev:worksheets
+npm run dev:quizzes
+npm run dev:ai-processor
+npm run dev:client
+
+# Run all services
+npm run dev:all
+```
+
+### Kubernetes Development
+```bash
+# Start full development environment
+skaffold dev
+
+# Deploy to production
+skaffold run
+```
+
+### Testing
+```bash
+# Run tests for all services
+npm run test:all
+
+# Run tests for specific service
+npm run test:auth
+npm run test:worksheets
+```
+
+---
+
+## 📊 Monitoring & Observability
+
+- **Health Checks** - Built-in health endpoints for all services
+- **Logging** - Structured logging with correlation IDs
+- **Metrics** - Performance monitoring and alerting
+- **Tracing** - Distributed tracing for request flows
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Code Standards
+
+- **TypeScript** for type safety
+- **ESLint** for code quality
+- **Prettier** for code formatting
+- **Conventional Commits** for commit messages
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Claude API** for AI-powered content generation
+- **NATS** for reliable message brokering
+- **Kubernetes** for container orchestration
+- **Next.js** for the modern React framework
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the educational community**
+
+[Report Bug](https://github.com/your-username/worksheeter/issues) • [Request Feature](https://github.com/your-username/worksheeter/issues) • [Documentation](https://docs.worksheeter.com)
+
+</div> 

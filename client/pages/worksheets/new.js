@@ -95,7 +95,7 @@ const NewWorksheet = ({ currentUser }) => {
       <div className="creator-header">
         <div className="container">
           <div className="header-content">
-            <h1 className="page-title">
+            <h1 className="elegant-silver-title-v2">
               <i className="fas fa-plus-circle me-3"></i>
               Create New Worksheet
             </h1>
@@ -117,9 +117,6 @@ const NewWorksheet = ({ currentUser }) => {
                   <h3 className="section-title">
                     Worksheet Title
                   </h3>
-                  <p className="section-description">
-                    Give your worksheet a descriptive name
-                  </p>
                 </div>
 
                 <div className="input-group-modern">
@@ -131,7 +128,6 @@ const NewWorksheet = ({ currentUser }) => {
                       onFocus={() => setTitleFocused(true)}
                       onBlur={() => setTitleFocused(false)}
                       className="input-modern"
-                      placeholder="e.g., Biology Chapter 5 - Photosynthesis"
                       required
                     />
                     <label className="label-modern">Worksheet Title</label>
@@ -147,15 +143,13 @@ const NewWorksheet = ({ currentUser }) => {
                     <i className="fas fa-key me-2"></i>
                     Keywords ({keywords.filter(k => k.trim()).length})
                   </h3>
-                  <p className="section-description">
-                    Add important terms and concepts for this worksheet
-                  </p>
                 </div>
 
                 <div className="keywords-container">
                   <div className="keywords-grid">
                     {keywords.map((keyword, index) => (
                       <div key={index} className="keyword-item">
+                        <div className="question-number">{index + 1}</div>
                         <input
                           type="text"
                           value={keyword}
@@ -196,9 +190,6 @@ const NewWorksheet = ({ currentUser }) => {
                     <i className="fas fa-question-circle me-2"></i>
                     Questions ({questions.filter(q => q.trim()).length})
                   </h3>
-                  <p className="section-description">
-                    Add study questions related to your topic
-                  </p>
                 </div>
 
                 <div className="questions-container">
@@ -283,7 +274,7 @@ const NewWorksheet = ({ currentUser }) => {
                     <i className="fas fa-check-circle"></i>
                   </div>
                   <div className="tip-text">
-                    Use specific, focused keywords that capture key concepts
+                    Use specific keywords that capture key concepts
                   </div>
                 </div>
                 
@@ -292,7 +283,7 @@ const NewWorksheet = ({ currentUser }) => {
                     <i className="fas fa-check-circle"></i>
                   </div>
                   <div className="tip-text">
-                    Write clear, specific questions that test understanding
+                    Write clear questions that test understanding
                   </div>
                 </div>
                 
@@ -310,37 +301,7 @@ const NewWorksheet = ({ currentUser }) => {
                     <i className="fas fa-check-circle"></i>
                   </div>
                   <div className="tip-text">
-                    Keep questions concise and focused on one concept each
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="sidebar-card">
-              <div className="card-header">
-                <h4 className="card-title">
-                  <i className="fas fa-chart-bar me-2"></i>
-                  Worksheet Summary
-                </h4>
-              </div>
-              <div className="card-content">
-                <div className="summary-stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-key"></i>
-                  </div>
-                  <div className="stat-content">
-                    <div className="stat-label">Keywords</div>
-                    <div className="stat-value">{keywords.filter(k => k.trim()).length}</div>
-                  </div>
-                </div>
-                
-                <div className="summary-stat">
-                  <div className="stat-icon">
-                    <i className="fas fa-question-circle"></i>
-                  </div>
-                  <div className="stat-content">
-                    <div className="stat-label">Questions</div>
-                    <div className="stat-value">{questions.filter(q => q.trim()).length}</div>
+                    Keep questions focused on one concept each
                   </div>
                 </div>
               </div>
@@ -364,10 +325,10 @@ const NewWorksheet = ({ currentUser }) => {
         }
 
         .creator-header {
-          background: white;
-          border-bottom: 1px solid #e2e8f0;
-          padding: 3rem 0 2rem;
-          margin-bottom: 3rem;
+          background: transparent;
+          border-bottom: none;
+          padding: 2rem 0 1rem;
+          margin-bottom: 1rem;
         }
 
         .container {
@@ -404,12 +365,27 @@ const NewWorksheet = ({ currentUser }) => {
           opacity: 0.7;
         }
 
-        .page-title {
-          font-size: 3rem;
-          font-weight: 900;
-          color: #1e293b;
-          margin-bottom: 1rem;
-          line-height: 1.2;
+        .elegant-silver-title-v2 {
+          font-family: 'Playfair Display', serif !important;
+          font-size: 3rem !important;
+          font-weight: 900 !important;
+          color: #c0c4cc !important;
+          text-shadow: 0 6px 24px rgba(0, 0, 0, 0.5), 0 3px 12px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(0, 0, 0, 0.2) !important;
+          margin-bottom: 1rem !important;
+          line-height: 1.2 !important;
+          background: none !important;
+          background-image: none !important;
+          background-clip: unset !important;
+          -webkit-background-clip: unset !important;
+          -webkit-text-fill-color: unset !important;
+          text-fill-color: unset !important;
+        }
+
+        h1.elegant-silver-title-v2,
+        .worksheet-creator h1.elegant-silver-title-v2 {
+          color: #c0c4cc !important;
+          background: none !important;
+          -webkit-text-fill-color: unset !important;
         }
 
         .page-subtitle {
@@ -450,7 +426,7 @@ const NewWorksheet = ({ currentUser }) => {
         }
 
         .section-title {
-          font-size: 1.25rem;
+          font-size: 1.5rem;
           font-weight: 700;
           color: #1e293b;
           margin-bottom: 0.5rem;
@@ -460,7 +436,7 @@ const NewWorksheet = ({ currentUser }) => {
 
         .section-description {
           color: #64748b;
-          font-size: 0.95rem;
+          font-size: 1.1rem;
           margin: 0;
         }
 
@@ -490,7 +466,7 @@ const NewWorksheet = ({ currentUser }) => {
           border: none;
           padding: 1.25rem;
           color: #1e293b;
-          font-size: 1rem;
+          font-size: 1.5rem;
           outline: none;
           z-index: 2;
           position: relative;
@@ -512,7 +488,7 @@ const NewWorksheet = ({ currentUser }) => {
           top: 50%;
           transform: translateY(-50%);
           color: #64748b;
-          font-size: 1rem;
+          font-size: 1.5rem;
           font-weight: 500;
           pointer-events: none;
           transition: all 0.3s ease;
@@ -551,7 +527,7 @@ const NewWorksheet = ({ currentUser }) => {
 
         .keywords-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
           gap: 1rem;
           margin-bottom: 1rem;
         }
@@ -560,6 +536,7 @@ const NewWorksheet = ({ currentUser }) => {
           display: flex;
           gap: 0.5rem;
           align-items: center;
+          min-width: 0;
         }
 
         .keyword-input {
@@ -569,8 +546,10 @@ const NewWorksheet = ({ currentUser }) => {
           border-radius: 8px;
           background: white;
           color: #1e293b;
-          font-size: 0.9rem;
+          font-size: 1.3rem;
           transition: all 0.2s ease;
+          min-width: 0;
+          width: 100%;
         }
 
         .keyword-input:focus {
@@ -615,6 +594,7 @@ const NewWorksheet = ({ currentUser }) => {
           align-items: center;
           justify-content: center;
           gap: 0.5rem;
+          font-size: 1.15rem;
         }
 
         .add-keyword-btn:hover:not(:disabled),
@@ -631,7 +611,7 @@ const NewWorksheet = ({ currentUser }) => {
         }
 
         .limit-text {
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           color: #94a3b8;
           margin-left: 0.5rem;
         }
@@ -659,7 +639,7 @@ const NewWorksheet = ({ currentUser }) => {
           align-items: center;
           justify-content: center;
           font-weight: 600;
-          font-size: 0.85rem;
+          font-size: 1rem;
           flex-shrink: 0;
           margin-top: 0.5rem;
         }
@@ -675,7 +655,7 @@ const NewWorksheet = ({ currentUser }) => {
           border-radius: 8px;
           background: white;
           color: #1e293b;
-          font-size: 0.9rem;
+          font-size: 1.3rem;
           transition: all 0.2s ease;
           resize: vertical;
           min-height: 60px;
@@ -735,13 +715,13 @@ const NewWorksheet = ({ currentUser }) => {
         .alert-title {
           color: #ef4444;
           font-weight: 600;
-          font-size: 0.9rem;
+          font-size: 1.1rem;
           margin-bottom: 0.25rem;
         }
 
         .alert-message {
           color: #ef4444;
-          font-size: 0.85rem;
+          font-size: 1rem;
           opacity: 0.8;
         }
 
@@ -759,7 +739,7 @@ const NewWorksheet = ({ currentUser }) => {
           border-radius: 12px;
           padding: 0.875rem 2rem;
           font-weight: 600;
-          font-size: 0.95rem;
+          font-size: 1.1rem;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
@@ -801,7 +781,7 @@ const NewWorksheet = ({ currentUser }) => {
         }
 
         .card-title {
-          font-size: 1rem;
+          font-size: 1.2rem;
           font-weight: 700;
           color: #1e293b;
           margin: 0;
@@ -826,8 +806,6 @@ const NewWorksheet = ({ currentUser }) => {
         .tip-icon {
           width: 20px;
           height: 20px;
-          background: #10b981;
-          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -836,14 +814,15 @@ const NewWorksheet = ({ currentUser }) => {
         }
 
         .tip-icon i {
-          color: white;
-          font-size: 0.7rem;
+          color: #10b981;
+          font-size: 0.9rem;
         }
 
         .tip-text {
           color: #64748b;
-          font-size: 0.9rem;
-          line-height: 1.5;
+          font-size: 1.25rem;
+          line-height: 1.6;
+          font-weight: 500;
         }
 
         .summary-stat {
@@ -878,15 +857,15 @@ const NewWorksheet = ({ currentUser }) => {
 
         .stat-label {
           color: #64748b;
-          font-size: 0.8rem;
+          font-size: 0.9rem;
           font-weight: 500;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .stat-value {
-          color: #1e293b;
-          font-size: 0.95rem;
+          color: white;
+          font-size: 1.1rem;
           font-weight: 600;
           margin-top: 0.25rem;
         }
@@ -935,6 +914,7 @@ const NewWorksheet = ({ currentUser }) => {
 
           .keywords-grid {
             grid-template-columns: 1fr;
+            gap: 0.75rem;
           }
 
           .form-actions {

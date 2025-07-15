@@ -49,6 +49,8 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
     return () => clearInterval(timer);
   }, [quizSubmitted, quiz]);
 
+
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -185,7 +187,7 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #ffffff;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
           }
 
           .loading-content {
@@ -248,9 +250,9 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
           <div className={`results-card ${isPerfect ? 'perfect' : passed ? 'good' : 'needs-work'}`}>
             <div className="results-header">
               <div className="score-display">
-                <div className={`score-circle ${isPerfect ? 'perfect' : passed ? 'good' : 'needs-work'}`}>
-                  <span className="score-number">{score}</span>
-                  <span className="score-percent">%</span>
+                <div className={`score-circle ${isPerfect ? 'perfect' : passed ? 'good' : 'needs-work'}`} id="quiz-score-circle">
+                  <span className="quiz-score-number" id="quiz-score-number">{score}</span>
+                  <span className="quiz-score-percent" id="quiz-score-percent">%</span>
                 </div>
                 <div className="score-details">
                   <h2 className="score-title">
@@ -285,22 +287,7 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
                 </div>
               </div>
             </div>
-
-            {isPerfect && (
-              <div className="success-message">
-                <h4>Congratulations!</h4>
-                <p>You've mastered this level! {quiz.difficulty !== 'advanced' && 'The next difficulty level is now unlocked.'}</p>
-              </div>
-            )}
-
-            {!isPerfect && (
-              <div className="encouragement-message">
-                <h4>Keep going!</h4>
-                <p>You need 100% to unlock the next level. You can retake this quiz anytime.</p>
-              </div>
-            )}
-
-            <div className="results-actions">
+              <div className="results-actions">
               <a href="/quizzes" className="btn btn-secondary">
                 Back to Dashboard
               </a>
@@ -315,14 +302,15 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         </div>
 
         <style jsx>{`
-          .quiz-results {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 0;
-          }
+                  .quiz-results {
+          min-height: 100vh;
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem 0;
+          color: #f1f5f9;
+        }
 
           .container {
             max-width: 600px;
@@ -330,30 +318,35 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
             padding: 0 2rem;
           }
 
-          .results-card {
-            border-radius: 24px;
-            padding: 3rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.08);
-            backdrop-filter: blur(10px);
-            background: white;
-          }
+                  .results-card {
+          border-radius: 24px;
+          padding: 3rem;
+          text-align: center;
+          position: relative;
+          overflow: hidden;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          background: linear-gradient(135deg, #1e293b, #334155);
+          color: #f1f5f9;
+          border: 2px solid #475569;
+        }
 
           .results-card.perfect {
-            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+            background: linear-gradient(135deg, #1e293b, #334155);
             border: 3px solid #10b981;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.2);
           }
 
           .results-card.good {
-            background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+            background: linear-gradient(135deg, #1e293b, #334155);
             border: 3px solid #f59e0b;
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.2);
           }
 
           .results-card.needs-work {
-            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+            background: linear-gradient(135deg, #1e293b, #334155);
             border: 3px solid #ef4444;
+            box-shadow: 0 20px 60px rgba(239, 68, 68, 0.2);
           }
 
           .results-header {
@@ -368,41 +361,80 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
           }
 
           .score-circle {
-            width: 120px;
-            height: 120px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            border: 6px solid;
+            border: 8px solid;
           }
 
           .score-circle.perfect {
             border-color: #10b981;
-            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            background: linear-gradient(135deg, #ffffff, #f0fdf4);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
           }
 
           .score-circle.good {
             border-color: #f59e0b;
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            background: linear-gradient(135deg, #ffffff, #fffbeb);
+            box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
           }
 
           .score-circle.needs-work {
             border-color: #ef4444;
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            background: linear-gradient(135deg, #ffffff, #fef2f2);
+            box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4);
           }
 
           .score-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1e293b;
+            font-size: 3rem !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
           }
 
           .score-percent {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #64748b;
+            font-size: 1.8rem !important;
+            font-weight: 600 !important;
+            color: #1e293b !important;
+          }
+
+          #quiz-score-number {
+            font-size: 3rem !important;
+            font-weight: 700 !important;
+            color: #374151 !important;
+          }
+
+          #quiz-score-percent {
+            font-size: 1.8rem !important;
+            font-weight: 600 !important;
+            color: #6b7280 !important;
+          }
+
+          .quiz-score-number {
+            font-size: 3rem !important;
+            font-weight: 700 !important;
+            color: #374151 !important;
+          }
+
+          .quiz-score-percent {
+            font-size: 1.8rem !important;
+            font-weight: 600 !important;
+            color: #6b7280 !important;
+          }
+
+          .score-circle #quiz-score-number {
+            font-size: 3rem !important;
+            font-weight: 700 !important;
+            color: #374151 !important;
+          }
+
+          .score-circle #quiz-score-percent {
+            font-size: 1.8rem !important;
+            font-weight: 600 !important;
+            color: #6b7280 !important;
           }
 
           .score-details {
@@ -410,16 +442,18 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
           }
 
           .score-title {
-            font-size: 1.75rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            color: #1e293b;
+            color: #ffffff;
             margin: 0 0 0.5rem 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           }
 
           .score-description {
-            color: #64748b;
-            font-size: 1.1rem;
+            color: #e2e8f0;
+            font-size: 1.3rem;
             margin: 0;
+            font-weight: 500;
           }
 
           .quiz-info {
@@ -427,10 +461,11 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
             flex-direction: column;
             gap: 1rem;
             margin: 2rem 0;
-            padding: 1.5rem;
-            background: #f8fafc;
+            padding: 2rem;
+            background: rgba(71, 85, 105, 0.3);
             border-radius: 16px;
-            border: 1px solid #f1f5f9;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            backdrop-filter: blur(10px);
           }
 
           .info-item {
@@ -441,11 +476,14 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
 
           .info-label {
             font-weight: 600;
-            color: #374151;
+            color: #ffffff;
+            font-size: 1.1rem;
           }
 
           .info-value {
-            color: #64748b;
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            font-weight: 500;
           }
 
           .difficulty-display {
@@ -455,8 +493,9 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
           }
 
           .difficulty-name {
-            color: #64748b;
+            color: #e2e8f0;
             font-weight: 500;
+            font-size: 1.1rem;
           }
 
           .level-indicator {
@@ -476,41 +515,51 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
           }
 
           .success-message {
-            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
-            border: 2px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.1));
+            border: 2px solid #34d399;
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 2rem;
             margin: 2rem 0;
+            backdrop-filter: blur(10px);
           }
 
           .success-message h4 {
-            color: #166534;
+            color: #ffffff;
             margin: 0 0 0.5rem 0;
             font-weight: 600;
+            font-size: 1.3rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           }
 
           .success-message p {
-            color: #15803d;
+            color: #e2e8f0;
             margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
           }
 
           .encouragement-message {
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border: 2px solid #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+            border: 2px solid #60a5fa;
             border-radius: 16px;
-            padding: 1.5rem;
+            padding: 2rem;
             margin: 2rem 0;
+            backdrop-filter: blur(10px);
           }
 
           .encouragement-message h4 {
-            color: #1d4ed8;
+            color: #ffffff;
             margin: 0 0 0.5rem 0;
             font-weight: 600;
+            font-size: 1.3rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
           }
 
           .encouragement-message p {
-            color: #2563eb;
+            color: #e2e8f0;
             margin: 0;
+            font-size: 1.1rem;
+            font-weight: 500;
           }
 
           .results-actions {
@@ -549,16 +598,79 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
             color: white;
           }
 
+          /* Dark Mode Styling for Results */
+          .dark-mode .quiz-results {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+          }
+
+          .dark-mode .results-card {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+          }
+
+          .dark-mode .results-card.perfect {
+            background: #334155 !important;
+            border-color: #10b981 !important;
+          }
+
+          .dark-mode .results-card.good {
+            background: #334155 !important;
+            border-color: #f59e0b !important;
+          }
+
+          .dark-mode .results-card.needs-work {
+            background: #334155 !important;
+            border-color: #ef4444 !important;
+          }
+
+          .dark-mode .score-title {
+            color: #f1f5f9 !important;
+          }
+
+          .dark-mode .score-description {
+            color: #cbd5e1 !important;
+          }
+
+          .dark-mode .quiz-info {
+            background: #475569 !important;
+            border-color: #475569 !important;
+          }
+
+          .dark-mode .info-label {
+            color: #f1f5f9 !important;
+          }
+
+          .dark-mode .info-value {
+            color: #cbd5e1 !important;
+          }
+
+          .dark-mode .difficulty-name {
+            color: #cbd5e1 !important;
+          }
+
+          .dark-mode .btn-secondary {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+            border-color: #475569 !important;
+          }
+
+          .dark-mode .btn-secondary:hover {
+            background: #475569 !important;
+            color: #f1f5f9 !important;
+          }
+
           .btn-secondary {
-            background: #64748b;
-            color: white;
-            border: 1px solid transparent;
+            background: rgba(71, 85, 105, 0.4) !important;
+            color: #ffffff !important;
+            border: 2px solid rgba(71, 85, 105, 0.6) !important;
+            backdrop-filter: blur(10px) !important;
           }
 
           .btn-secondary:hover {
-            background: #475569;
-            text-decoration: none;
-            color: white;
+            background: rgba(71, 85, 105, 0.6) !important;
+            text-decoration: none !important;
+            color: #ffffff !important;
+            border-color: rgba(71, 85, 105, 0.8) !important;
           }
 
           .btn-outline-primary {
@@ -583,11 +695,13 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
             }
 
             .score-number {
-              font-size: 2rem;
+              font-size: 2rem !important;
+              color: #000000 !important;
             }
 
             .score-percent {
-              font-size: 1.25rem;
+              font-size: 1.25rem !important;
+              color: #1e293b !important;
             }
 
             .results-actions {
@@ -613,23 +727,9 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         <div className="container">
           <div className="header-content">
             <div className="quiz-info">
-              <nav className="breadcrumb">
-                <a href="/quizzes" className="breadcrumb-link">Quiz Dashboard</a>
-                <span className="breadcrumb-separator">→</span>
-                <span className="breadcrumb-current">{quiz.title}</span>
-              </nav>
-              
               <h1 className="quiz-title">{quiz.title}</h1>
-              <div className="difficulty-badge">
+              <div className={`difficulty-badge ${quiz.difficulty}`}>
                 <span className="difficulty-name">{difficultyInfo.label}</span>
-                <div className="level-indicator">
-                  {Array.from({ length: 3 }, (_, i) => (
-                    <div 
-                      key={i} 
-                      className={`level-dot ${i < difficultyInfo.level ? 'active' : ''}`}
-                    />
-                  ))}
-                </div>
               </div>
             </div>
             
@@ -745,7 +845,8 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
       <style jsx>{`
         .quiz-container {
           min-height: 100vh;
-          background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e293b 100%);
+          color: #f1f5f9;
         }
 
         .container {
@@ -755,8 +856,8 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .quiz-header {
-          background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-          border-bottom: 2px solid #e2e8f0;
+          background: linear-gradient(135deg, #0f172a, #1e293b);
+          border-bottom: 2px solid #475569;
           padding: 2rem 0;
           position: relative;
           overflow: hidden;
@@ -827,25 +928,46 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .quiz-title {
-          font-size: 2rem;
-          font-weight: 700;
-          color: #1e293b;
-          margin: 0 0 1rem 0;
+          font-size: 2.5rem !important;
+          font-weight: 700 !important;
+          color: #f1f5f9 !important;
+          margin: 0 0 1rem 0 !important;
+          transform: translateY(-0.5rem) !important;
         }
 
         .difficulty-badge {
-          display: inline-flex;
-          align-items: center;
-          gap: 0.75rem;
-          padding: 0.5rem 1rem;
-          background: white;
-          border: 2px solid #e2e8f0;
-          border-radius: 12px;
+          display: inline-flex !important;
+          align-items: center !important;
+          margin-left: 1rem !important;
+          gap: 0.75rem !important;
+          padding: 0.5rem 1rem !important;
+          background: transparent !important;
+          border: 2px solid #e2e8f0 !important;
+          border-radius: 12px !important;
         }
 
         .difficulty-name {
-          font-weight: 600;
-          color: #374151;
+          font-weight: 600 !important;
+          color: #374151 !important;
+          font-size: 1.1rem !important;
+        }
+
+        .difficulty-badge.beginner {
+          background: linear-gradient(135deg, #cd7f32, #b8860b) !important;
+          border-color: #cd7f32 !important;
+          color: white !important;
+        }
+
+        .difficulty-badge.intermediate {
+          background: linear-gradient(135deg, #c0c0c0, #a9a9a9) !important;
+          border-color: #c0c0c0 !important;
+          color: white !important;
+        }
+
+        .difficulty-badge.advanced {
+          background: linear-gradient(135deg, #ffd700, #ffb347) !important;
+          border-color: #ffd700 !important;
+          color: white !important;
         }
 
         .level-indicator {
@@ -865,8 +987,8 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .timer-card {
-          background: white;
-          border: 2px solid #e2e8f0;
+          background: #334155;
+          border: 2px solid #475569;
           border-radius: 16px;
           padding: 1.5rem;
           text-align: center;
@@ -874,17 +996,17 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .timer-label {
-          font-size: 0.9rem;
-          color: #64748b;
-          margin-bottom: 0.5rem;
-          font-weight: 500;
+          font-size: 1.1rem !important;
+          color: #cbd5e1 !important;
+          margin-bottom: 0.5rem !important;
+          font-weight: 500 !important;
         }
 
         .timer-display {
-          font-size: 2rem;
-          font-weight: 700;
-          color: #1e293b;
-          font-family: 'JetBrains Mono', monospace;
+          font-size: 2.5rem !important;
+          font-weight: 700 !important;
+          color: #f1f5f9 !important;
+          font-family: 'JetBrains Mono', monospace !important;
         }
 
         .timer-display.warning {
@@ -902,12 +1024,12 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .progress-info {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 0.75rem;
-          font-size: 0.9rem;
-          color: #64748b;
-          font-weight: 500;
+          display: flex !important;
+          justify-content: space-between !important;
+          margin-bottom: 0.75rem !important;
+          font-size: 1.2rem !important;
+          color: #64748b !important;
+          font-weight: 500 !important;
         }
 
         .progress-bar {
@@ -925,8 +1047,8 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .question-card {
-          background: white;
-          border: 2px solid #f1f5f9;
+          background: #334155;
+          border: 2px solid #475569;
           border-radius: 20px;
           overflow: hidden;
           margin-bottom: 2rem;
@@ -934,17 +1056,17 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .question-header {
-          padding: 2rem;
-          background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-          border-bottom: 2px solid #e2e8f0;
+          padding: 2rem !important;
+          background: linear-gradient(135deg, #334155, #475569) !important;
+          border-bottom: 2px solid #475569 !important;
         }
 
         .question-text {
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: #1e293b;
-          margin: 0;
-          line-height: 1.6;
+          font-size: 1.6rem !important;
+          font-weight: 600 !important;
+          color: #f1f5f9 !important;
+          margin: 0 !important;
+          line-height: 1.6 !important;
         }
 
         .options-grid {
@@ -955,27 +1077,27 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .option-card {
-          background: white;
-          border: 2px solid #e2e8f0;
-          border-radius: 12px;
-          padding: 1.25rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          position: relative;
-          display: block;
+          background: #334155 !important;
+          border: 2px solid #475569 !important;
+          border-radius: 12px !important;
+          padding: 1.25rem !important;
+          cursor: pointer !important;
+          transition: all 0.3s ease !important;
+          position: relative !important;
+          display: block !important;
         }
 
         .option-card:hover {
-          border-color: #6366f1;
-          background: #f8fafc;
-          transform: translateY(-2px);
-          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+          border-color: #6366f1 !important;
+          background: #475569 !important;
+          transform: translateY(-2px) !important;
+          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15) !important;
         }
 
         .option-card.selected {
-          border-color: #6366f1;
-          background: linear-gradient(135deg, #eff6ff, #dbeafe);
-          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+          border-color: #6366f1 !important;
+          background: linear-gradient(135deg, #475569, #6366f1) !important;
+          box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2) !important;
         }
 
         .option-input {
@@ -989,18 +1111,18 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .option-letter {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          width: 32px;
-          height: 32px;
-          background: #f1f5f9;
-          color: #64748b;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 0.9rem;
-          flex-shrink: 0;
-          transition: all 0.3s ease;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          width: 40px !important;
+          height: 40px !important;
+          background: #475569 !important;
+          color: #cbd5e1 !important;
+          border-radius: 8px !important;
+          font-weight: 600 !important;
+          font-size: 1.2rem !important;
+          flex-shrink: 0 !important;
+          transition: all 0.3s ease !important;
         }
 
         .option-card.selected .option-letter {
@@ -1009,9 +1131,10 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .option-text {
-          color: #374151;
-          font-weight: 500;
-          line-height: 1.5;
+          color: #f1f5f9 !important;
+          font-weight: 500 !important;
+          line-height: 1.5 !important;
+          font-size: 1.3rem !important;
         }
 
         .quiz-navigation {
@@ -1022,17 +1145,17 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .btn {
-          padding: 0.875rem 1.5rem;
-          border-radius: 12px;
-          font-weight: 600;
-          font-size: 0.95rem;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          text-decoration: none;
-          display: inline-flex;
-          align-items: center;
-          border: none;
-          white-space: nowrap;
+          padding: 1rem 2rem !important;
+          border-radius: 12px !important;
+          font-weight: 600 !important;
+          font-size: 1.2rem !important;
+          cursor: pointer !important;
+          transition: all 0.3s ease !important;
+          text-decoration: none !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          border: none !important;
+          white-space: nowrap !important;
         }
 
         .btn-primary {
@@ -1056,14 +1179,14 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .btn-ghost {
-          background: white;
-          color: #64748b;
-          border: 2px solid #e2e8f0;
+          background: #334155 !important;
+          color: #cbd5e1 !important;
+          border: 2px solid #475569 !important;
         }
 
         .btn-ghost:hover {
-          background: #f8fafc;
-          border-color: #cbd5e1;
+          background: #475569 !important;
+          border-color: #64748b !important;
         }
 
         .btn-ghost:disabled {
@@ -1073,22 +1196,23 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .submit-btn {
-          font-size: 1.1rem;
-          padding: 1rem 2rem;
+          font-size: 1.4rem !important;
+          padding: 1.25rem 2.5rem !important;
         }
 
         .question-navigation {
-          background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-          border: 2px solid #e2e8f0;
-          border-radius: 16px;
-          padding: 1.5rem;
+          background: linear-gradient(135deg, #334155, #475569) !important;
+          border: 2px solid #475569 !important;
+          border-radius: 16px !important;
+          padding: 1.5rem !important;
         }
 
         .nav-header {
-          font-weight: 600;
-          color: #374151;
-          margin-bottom: 1rem;
-          text-align: center;
+          font-weight: 600 !important;
+          color: #f1f5f9 !important;
+          margin-bottom: 1rem !important;
+          text-align: center !important;
+          font-size: 1.3rem !important;
         }
 
         .nav-grid {
@@ -1099,38 +1223,236 @@ const QuizPage = ({ currentUser, quiz, errors }) => {
         }
 
         .nav-button {
-          width: 40px;
-          height: 40px;
-          border: 2px solid #e2e8f0;
-          background: white;
-          border-radius: 8px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          color: #64748b;
+          width: 50px !important;
+          height: 50px !important;
+          border: 2px solid #475569 !important;
+          background: #334155 !important;
+          border-radius: 8px !important;
+          font-weight: 600 !important;
+          cursor: pointer !important;
+          transition: all 0.2s ease !important;
+          color: #cbd5e1 !important;
+          font-size: 1.2rem !important;
         }
 
         .nav-button:hover {
-          border-color: #6366f1;
-          background: #f8fafc;
+          border-color: #6366f1 !important;
+          background: #475569 !important;
         }
 
         .nav-button.current {
-          border-color: #6366f1;
-          background: #6366f1;
-          color: white;
+          border-color: #6366f1 !important;
+          background: #6366f1 !important;
+          color: white !important;
         }
 
         .nav-button.answered {
-          border-color: #22c55e;
-          background: #22c55e;
-          color: white;
+          border-color: #22c55e !important;
+          background: #22c55e !important;
+          color: white !important;
         }
 
         .nav-button.unanswered {
-          border-color: #e2e8f0;
-          background: white;
-          color: #94a3b8;
+          border-color: #475569 !important;
+          background: #334155 !important;
+          color: #94a3b8 !important;
+        }
+
+        /* Dark Mode Styling for Quiz Interface */
+        .dark-mode .quiz-container {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #1e293b 100%) !important;
+        }
+
+        .dark-mode .quiz-header {
+          background: linear-gradient(135deg, #0f172a, #1e293b) !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .quiz-title {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .breadcrumb-link {
+          color: #6366f1 !important;
+        }
+
+        .dark-mode .breadcrumb-link:hover {
+          color: #5855eb !important;
+        }
+
+        .dark-mode .breadcrumb-separator {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .breadcrumb-current {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .difficulty-badge {
+          background: #334155 !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .difficulty-name {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .timer-card {
+          background: #334155 !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .timer-label {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .timer-display {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .progress-info {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .progress-bar {
+          background: #475569 !important;
+        }
+
+        .dark-mode .question-card {
+          background: #334155 !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .question-header {
+          background: linear-gradient(135deg, #334155, #475569) !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .question-text {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .option-card {
+          background: #334155 !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .option-card:hover {
+          background: #475569 !important;
+          border-color: #6366f1 !important;
+        }
+
+        .dark-mode .option-card.selected {
+          background: #475569 !important;
+          border-color: #6366f1 !important;
+        }
+
+        .dark-mode .option-letter {
+          background: #475569 !important;
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .option-card.selected .option-letter {
+          background: #6366f1 !important;
+          color: white !important;
+        }
+
+        .dark-mode .option-text {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .btn-ghost {
+          background: #334155 !important;
+          color: #cbd5e1 !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .btn-ghost:hover {
+          background: #475569 !important;
+          border-color: #64748b !important;
+        }
+
+        .dark-mode .btn-ghost:disabled {
+          background: #475569 !important;
+          color: #94a3b8 !important;
+        }
+
+        .dark-mode .question-navigation {
+          background: linear-gradient(135deg, #334155, #475569) !important;
+          border-color: #475569 !important;
+        }
+
+        .dark-mode .nav-header {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .nav-button {
+          background: #334155 !important;
+          border-color: #475569 !important;
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .nav-button:hover {
+          background: #475569 !important;
+          border-color: #6366f1 !important;
+        }
+
+        .dark-mode .nav-button.current {
+          background: #6366f1 !important;
+          border-color: #6366f1 !important;
+          color: white !important;
+        }
+
+        .dark-mode .nav-button.answered {
+          background: #22c55e !important;
+          border-color: #22c55e !important;
+          color: white !important;
+        }
+
+        .dark-mode .nav-button.unanswered {
+          background: #334155 !important;
+          border-color: #475569 !important;
+          color: #94a3b8 !important;
+        }
+
+        /* Dark Mode Styling for Error and Loading States */
+        .dark-mode body {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+        }
+
+        .dark-mode .container {
+          background: transparent !important;
+        }
+
+        .dark-mode .alert {
+          background: #334155 !important;
+          border-color: #475569 !important;
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .alert h4 {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .alert p {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .quiz-loading {
+          background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+        }
+
+        .dark-mode .loading-content h3 {
+          color: #f1f5f9 !important;
+        }
+
+        .dark-mode .loading-content p {
+          color: #cbd5e1 !important;
+        }
+
+        .dark-mode .loading-spinner {
+          border-color: #475569 !important;
+          border-top-color: #6366f1 !important;
         }
 
         @media (max-width: 768px) {

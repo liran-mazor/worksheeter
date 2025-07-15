@@ -15,7 +15,7 @@ export default () => {
               <a href="https://www.linkedin.com/in/liran-mazor/" target="_blank" rel="noopener noreferrer" className="social-link">
                 <i className="fab fa-linkedin"></i>
               </a>
-              <a href="https://github.com/worksheeter" target="_blank" rel="noopener noreferrer" className="social-link">
+              <a href="https://github.com/liran-mazor/worksheeter" target="_blank" rel="noopener noreferrer" className="social-link">
                 <i className="fab fa-github"></i>
               </a>
             </div>

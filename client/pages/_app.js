@@ -4,6 +4,7 @@ import Head from 'next/head';
 import buildClient from '../api/build-client';
 import Sidebar from '../components/sidebar';
 import Footer from '../components/footer';
+import PageTransition from '../components/page-transition';
 
 const AppComponent = ({ Component, pageProps, currentUser }) => {
   return (
@@ -14,20 +15,36 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       
-      <div className="app-container">
-        <Sidebar currentUser={currentUser} />
-        <div className="main-layout">
-          <main className="main-content">
-            <Component currentUser={currentUser} {...pageProps} />
-          </main>
-          <Footer />
+      <PageTransition>
+        <div className="app-container">
+          <Sidebar currentUser={currentUser} />
+          <div className="main-layout">
+            <main className="main-content">
+              <Component currentUser={currentUser} {...pageProps} />
+            </main>
+            <Footer />
+          </div>
         </div>
-      </div>
+      </PageTransition>
 
       <style jsx global>{`
+        /* Prevent white flash during page transitions */
+        html, body {
+          background: 
+            linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%),
+            radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(99, 102, 241, 0.08) 0%, transparent 50%) !important;
+          color: #f1f5f9 !important;
+        }
+
+        #__next {
+          background: inherit !important;
+        }
+
         .app-container {
           display: flex;
           min-height: 100vh;
+          background: inherit !important;
         }
 
         .main-layout {
@@ -35,11 +52,18 @@ const AppComponent = ({ Component, pageProps, currentUser }) => {
           display: flex;
           flex-direction: column;
           min-height: 100vh;
+          background: inherit !important;
         }
 
         .main-content {
           flex: 1;
-          background: #ffffff;
+          background: inherit !important;
+          color: #f1f5f9 !important;
+        }
+
+        /* Force dark mode on all pages during transitions */
+        .main-content * {
+          background-color: transparent !important;
         }
 
         /* Responsive adjustments */

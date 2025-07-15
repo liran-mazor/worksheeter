@@ -1,6 +1,5 @@
 import { Listener, Subjects, WorksheetCreatedEvent } from "@liranmazor/common";
 import { Message } from "node-nats-streaming";
-import { worksheetService } from "../services/worksheet.service";
 import { vectorService } from "../services/vector.service";
 
 export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
@@ -9,20 +8,15 @@ export class WorksheetCreatedListener extends Listener<WorksheetCreatedEvent> {
   
   async onMessage(data: WorksheetCreatedEvent['data'], msg: Message) {
     try {
-      await worksheetService.createInitialQuizRecords(
-        data.id,  
-        data.title,
-        data.userId
-      );
-
       await vectorService.storeWorksheetCreationEvent({
         id: data.id,
         title: data.title,
         userId: data.userId,
-        createdAt: new Date() 
+        createdAt: new Date()
       });
+
     } catch (error) {
-      console.error(`Error processing worksheet created event:`, error);
+      console.error('❌ Error processing worksheet created event:', error);
       return;
     }
     msg.ack();
