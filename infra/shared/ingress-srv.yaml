@@ -45,6 +45,13 @@ spec:
                 name: coding-srv
                 port:
                   number: 3000
+          - path: /api/sessions/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: sessions-srv
+                port:
+                  number: 3000
           - path: /?(.*)
             pathType: ImplementationSpecific
             backend:

@@ -1,11 +1,12 @@
 import express from 'express';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
-import { currentUser, errorHandler, rateLimiter } from '@liranmazor/common';
 import helmet from 'helmet';
+import { currentUser, errorHandler, rateLimiter } from '@liranmazor/common';
 import { healthRouter } from './routes/health';
-import { executeCodeRouter } from './routes/execute';
-import { problemsRouter } from './routes/problems';
+import { showSessionRouter } from './routes/show';
+import { uploadSessionRouter } from './routes/upload';
+import { indexSessionsRouter } from './routes';
 
 const app = express();
 
@@ -31,15 +32,16 @@ app.use(
     httpOnly: true, 
     maxAge: 5 * 60 * 60 * 1000,  
     domain: '.worksheeter.dev', 
-    sameSite: 'lax'
+    sameSite: 'lax' 
   })
- );
+);
 
-app.use(currentUser);
+app.use(currentUser); 
 app.use(rateLimiter as any);
 
-app.use(executeCodeRouter);
-app.use(problemsRouter);
+app.use(uploadSessionRouter);
+app.use(indexSessionsRouter);
+app.use(showSessionRouter);
 
 app.use(errorHandler as any);
 

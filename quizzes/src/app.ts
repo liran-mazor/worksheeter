@@ -36,10 +36,10 @@ app.use(
     sameSite: 'lax'
    })
  );
-
-app.use(rateLimiter as any);
-
+ 
+ 
 app.use(currentUser);
+app.use(rateLimiter as any);
 
 app.use(indexQuizzesRouter);
 app.use(newQuizRouter);

@@ -15,7 +15,6 @@ html, body {
 
 #__next {
   background: inherit !important;
-  min-height: 100vh;
 }
 
 /* Override any white backgrounds that might appear during transitions */

@@ -54,6 +54,12 @@ export default ({ currentUser }) => {
       icon: 'fas fa-code',
       tooltip: 'Coding'
     },
+    {
+      label: 'Sessions',
+      href: '/sessions',
+      icon: 'fas fa-user-clock',
+      tooltip: 'Sessions'
+    },
   ];
 
   const isActiveRoute = (href) => {

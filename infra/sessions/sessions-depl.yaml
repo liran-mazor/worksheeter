@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sessions-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sessions
+  template:
+    metadata:
+      labels:
+        app: sessions
+    spec:
+      containers:
+        - name: sessions
+          image: liran1789/sessions
+          env:
+            - name: MONGO_URI
+              value: 'mongodb://sessions-mongo-srv:27017/sessions'
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name 
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: worksheeter
+            - name: QUEUE_GROUP_NAME
+              value: 'sessions-service'
+          ports:
+            - containerPort: 3000
+          readinessProbe:
+            httpGet:
+              path: /api/sessions/health
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sessions-srv
+spec:
+  selector:
+    app: sessions
+  ports:
+    - name: sessions
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

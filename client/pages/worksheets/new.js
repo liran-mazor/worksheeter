@@ -99,9 +99,7 @@ const NewWorksheet = ({ currentUser }) => {
               <i className="fas fa-plus-circle me-3"></i>
               Create New Worksheet
             </h1>
-            <p className="page-subtitle">
-              Create a custom worksheet with your own keywords and questions
-            </p>
+            <div className="elegant-separator"></div>
           </div>
         </div>
       </div>
@@ -388,10 +386,13 @@ const NewWorksheet = ({ currentUser }) => {
           -webkit-text-fill-color: unset !important;
         }
 
-        .page-subtitle {
-          font-size: 1.2rem;
-          color: #64748b;
-          margin: 0;
+        .elegant-separator {
+          width: 280px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(192, 192, 192, 0.3), #c0c0c0, #d3d3d3, rgba(211, 211, 211, 0.3), transparent);
+          margin: 1rem auto 0;
+          border-radius: 1px;
+          box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
         }
 
         .creator-layout {

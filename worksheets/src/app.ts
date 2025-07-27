@@ -38,9 +38,9 @@ app.use(
   })
  );
 
+app.use(currentUser);
 app.use(rateLimiter as any);
 
-app.use(currentUser);
 
 app.use(newWorksheetRouter);
 app.use(showWorksheetRouter);

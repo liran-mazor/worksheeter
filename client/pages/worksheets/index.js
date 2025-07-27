@@ -160,12 +160,7 @@ const WorksheetsIndex = ({ worksheets: initialWorksheets, currentUser }) => {
                 <i className="fas fa-spinner fa-spin ms-3" style={{ fontSize: '1.5rem' }}></i>
               )}
             </h1>
-            <p className="page-subtitle">
-              {worksheets.length === 0 
-                ? "You haven't created any worksheets yet"
-                : `${filteredAndSortedWorksheets.length} of ${worksheets.length} worksheet${worksheets.length === 1 ? '' : 's'} shown`
-              }
-            </p>
+            <div className="elegant-separator"></div>
           </div>
         </div>
       </div>
@@ -173,20 +168,16 @@ const WorksheetsIndex = ({ worksheets: initialWorksheets, currentUser }) => {
       <div className="container">
         {worksheets.length === 0 ? (
           /* Empty State */
-          <div className="empty-state">
-            <div className="empty-icon" style={{ fontSize: '4rem', width: '140px', height: '140px', marginBottom: '2.5rem' }}>
-              <i className="fas fa-file-alt"></i>
+          <div className="empty-state-wrapper">
+            <div className="empty-state">
+              <h3 className="empty-title" style={{ fontSize: '2.2rem', marginBottom: '1.5rem' }}>
+                No Worksheets Yet
+              </h3>
+              <Link href="/worksheets/new" className="btn btn-primary" style={{ fontSize: '1.3rem', padding: '1.2rem 2rem' }}>
+                <i className="fas fa-plus me-2"></i>
+                Create Your First Worksheet
+              </Link>
             </div>
-            <h3 className="empty-title" style={{ fontSize: '2.8rem', marginBottom: '1.5rem' }}>
-              No Worksheets Yet
-            </h3>
-            <p className="empty-description" style={{ fontSize: '1.5rem', marginBottom: '2.5rem' }}>
-              Create your first worksheet to start organizing your study materials with AI-powered keyword extraction and question generation.
-            </p>
-            <Link href="/worksheets/new" className="btn btn-primary" style={{ fontSize: '1.3rem', padding: '1.2rem 2rem' }}>
-              <i className="fas fa-plus me-2"></i>
-              Create Your First Worksheet
-            </Link>
           </div>
         ) : (
           <>
@@ -387,6 +378,15 @@ const WorksheetsIndex = ({ worksheets: initialWorksheets, currentUser }) => {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 2rem;
+          position: relative;
+        }
+
+        .empty-state-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 60vh;
+          padding-top: 2rem;
         }
 
         .header-content {
@@ -420,10 +420,13 @@ const WorksheetsIndex = ({ worksheets: initialWorksheets, currentUser }) => {
           -webkit-text-fill-color: unset !important;
         }
 
-        .page-subtitle {
-          font-size: 1.2rem;
-          color: #64748b;
-          margin: 0;
+        .elegant-separator {
+          width: 280px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(192, 192, 192, 0.3), #c0c0c0, #d3d3d3, rgba(211, 211, 211, 0.3), transparent);
+          margin: 1rem auto 0;
+          border-radius: 1px;
+          box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
         }
 
         .btn {
@@ -485,6 +488,9 @@ const WorksheetsIndex = ({ worksheets: initialWorksheets, currentUser }) => {
           border-radius: 16px;
           border: 1px solid #e2e8f0;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          width: 90%;
+          max-width: 600px;
+          margin: 0 auto;
         }
 
         .empty-icon {

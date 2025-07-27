@@ -63,3 +63,11 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
+    - image: liran1789/sessions
+      context: sessions
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: 'src/**/*.ts'
+            dest: .

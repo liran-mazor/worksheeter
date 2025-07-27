@@ -332,9 +332,7 @@ const QuizzesPage = ({ quizzes, errors }) => {
               <i className="fas fa-brain me-3"></i>
               Quiz Dashboard
             </h1>
-            <p className="page-subtitle">
-              Complete all three difficulty levels with perfect scores!
-            </p>
+            <div className="elegant-separator"></div>
           </div>
         </div>
       </div>
@@ -397,19 +395,17 @@ const QuizzesPage = ({ quizzes, errors }) => {
         )}
 
         {quizzes.length === 0 ? (
+          <div className="empty-state-wrapper">
             <div className="empty-state">
-             <div className="empty-icon">
-               <i className="fas fa-file-alt"></i>
-             </div>
-             <h3 className="empty-title">No Worksheets Yet</h3>
-             <p className="empty-description">
-               Create your first worksheet to start organizing your study materials with AI-powered keyword extraction and question generation.
-             </p>
-             <Link href="/worksheets/new" className="btn btn-primary" style={{ fontSize: '1.3rem', padding: '1.2rem 2rem' }}>
-               <i className="fas fa-plus me-2"></i>
-               Create Your First Worksheet
-             </Link>
-           </div>
+              <h3 className="empty-title" style={{ fontSize: '2.2rem', marginBottom: '1.5rem' }}>
+                No Quizzes Yet
+              </h3>
+              <Link href="/worksheets/new" className="btn btn-primary" style={{ fontSize: '1.3rem', padding: '1.2rem 2rem' }}>
+                <i className="fas fa-plus me-2"></i>
+                Create Your First Worksheet
+              </Link>
+            </div>
+          </div>
         ) : (
           <>
             {filteredAndSortedQuizzes.length === 0 ? (
@@ -557,6 +553,15 @@ const QuizzesPage = ({ quizzes, errors }) => {
           max-width: 1200px;
           margin: 0 auto;
           padding: 0 2rem;
+          position: relative;
+        }
+
+        .empty-state-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 60vh;
+          padding-top: 2rem;
         }
 
         .header-content {
@@ -595,10 +600,13 @@ const QuizzesPage = ({ quizzes, errors }) => {
           -webkit-text-fill-color: unset !important;
         }
 
-        .page-subtitle {
-          font-size: 1.2rem;
-          color: #64748b;
-          margin: 0;
+        .elegant-separator {
+          width: 280px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, rgba(192, 192, 192, 0.3), #c0c0c0, #d3d3d3, rgba(211, 211, 211, 0.3), transparent);
+          margin: 1rem auto 0;
+          border-radius: 1px;
+          box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
         }
 
         .header-content-center {
@@ -760,6 +768,9 @@ const QuizzesPage = ({ quizzes, errors }) => {
           border-radius: 16px;
           border: 1px solid #e2e8f0;
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+          width: 90%;
+          max-width: 600px;
+          margin: 0 auto;
         }
 
         .empty-icon {
