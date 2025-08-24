@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import { app } from './app';
 import { natsClient } from './lib/nats-client';
+import { SessionSummarizedListener } from './events/session-summarized-listener';
 
 const strat = async () => {
   if (!process.env.JWT_KEY){    
@@ -21,6 +22,9 @@ const strat = async () => {
   if (!process.env.QUEUE_GROUP_NAME) {
     throw new Error('QUEUE_GROUP_NAME must be defined');
   }
+  if (!process.env.DAILY_API_KEY) {
+    throw new Error('DAILY_API_KEY must be defined');
+  }
   
   try {
     await mongoose.connect(process.env.MONGO_URI!);
@@ -32,7 +36,9 @@ const strat = async () => {
       process.env.NATS_URL
     );
     natsClient.setupGracefulShutdown();
-    
+
+    new SessionSummarizedListener(natsClient.client).listen();
+  
   } catch (error) {
     console.log(error);
   }

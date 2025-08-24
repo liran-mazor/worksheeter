@@ -22,10 +22,7 @@ router.post(
     try {
       const response = await ragService.generateAnswer(query, userId);
       
-      res.status(200).json({
-        response,
-        timestamp: new Date().toISOString(),
-      });
+      res.status(200).json({response});
     } catch (error) {
       console.error('Thomas chat error:', error);
     }

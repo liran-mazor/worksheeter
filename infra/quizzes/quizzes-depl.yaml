@@ -14,15 +14,15 @@ spec:
     spec:
       containers:
         - name: quizzes
-          image: liran1789/quizzes
+          image: us.gcr.io/worksheeter-468814/quizzes
           env:
-            - name: DATABASE_URL
-              value: 'postgresql://pudding:asdf@quizzes-postgres-srv:5432/quizzes'
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
+            - name: DATABASE_URL
+              value: 'postgresql://pudding:$(POSTGRES_PASSWORD)@quizzes-postgres-srv:5432/quizzes'
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:

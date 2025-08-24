@@ -1,55 +1,59 @@
 import express, { Request, Response } from 'express';
-import { requireAuth, CodeExecutionError } from '@liranmazor/common';
+import { body } from 'express-validator';
+import { requireAuth, validateRequest } from '@liranmazor/common';
 import { judge0Client } from '../lib/judge0-client';
 import { CodeExecutedPublisher } from '../events/code-executed-publisher';
 import { natsClient } from '../lib/nats-client';
 import { randomBytes } from 'crypto';
-import { formatJudge0Response, extractUserCode, createCodeTemplate } from '../lib/utils';
 import { PROBLEMS } from '../lib/problems-data';
-import { SupportedLanguage, SUPPORTED_LANGUAGES } from '../lib/types';
+import { SupportedLanguage, SUPPORTED_LANGUAGES } from '../types/type';
+import { CodeService } from '../services/code.service';
 
 const router = express.Router();
 
 router.post(
   '/api/coding/execute',
+  [
+    body('code')
+      .trim()
+      .notEmpty()
+      .withMessage('Code is required'),
+    body('language')
+      .trim()
+      .notEmpty()
+      .withMessage('Language is required')
+      .isIn(SUPPORTED_LANGUAGES)
+      .withMessage(`Language must be one of: ${SUPPORTED_LANGUAGES.join(', ')}`),
+    body('problemId')
+      .trim()
+      .notEmpty()
+      .withMessage('Problem ID is required')
+      .custom((value) => {
+        if (!PROBLEMS[value]) {
+          throw new Error('Invalid problem ID');
+        }
+        return true;
+      })
+  ],
   requireAuth,
+  validateRequest,
   async (req: Request, res: Response) => {
     const { code, language, problemId } = req.body;
     
-    // Validate problem exists
     const problem = PROBLEMS[problemId];
-    if (!problem) {
-      throw new CodeExecutionError('Unknown problem', problemId);
-    }
 
-    // Validate language support
-    if (!SUPPORTED_LANGUAGES.includes(language as SupportedLanguage)) {
-      throw new CodeExecutionError('Unsupported language', language);
-    }
-
-    // Execute code using the new template system
-    const wrappedCode = createCodeTemplate(
+    const wrappedCode = CodeService.createCodeTemplate(
       language as SupportedLanguage, 
       code, 
       problem.functionName,
       problemId
     );
 
-    let judge0Response;
-    try {
-      judge0Response = await judge0Client.executeCodeWithTestCases(
-        wrappedCode,
-        language,
-        problem.testCases
-      );
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      throw new CodeExecutionError('code execution', errorMessage);
-    }
-
-    // Format Judge0 response and extract user code for AI processor
-    const formattedResponse = formatJudge0Response(judge0Response);
-    const userCode = extractUserCode(wrappedCode);
+    const judge0Response = await judge0Client.executeCodeWithTestCases(
+      wrappedCode,
+      language,
+      problem.testCases
+    );
 
     res.status(200).send(judge0Response);
     
@@ -60,9 +64,9 @@ router.post(
         problemId,
         problemDescription: problem.description,
         language,
-        userCode,
+        userCode: CodeService.extractUserCode(wrappedCode),
         wrappedCode,
-        judge0Response: formattedResponse,
+        judge0Response: CodeService.formatJudge0Response(judge0Response),
         executedAt: new Date().toISOString(),
         version: 0
       });

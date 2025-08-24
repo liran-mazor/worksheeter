@@ -7,8 +7,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: worksheeter.dev
-      http:
+    - http:
         paths:
           - path: /api/auth/users/?(.*)
             pathType: ImplementationSpecific
@@ -39,14 +38,14 @@ spec:
                 port:
                   number: 3000
           - path: /api/coding/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: coding-srv
                 port:
                   number: 3000
           - path: /api/sessions/?(.*)
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: sessions-srv

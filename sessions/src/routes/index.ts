@@ -8,10 +8,8 @@ router.get(
   '/api/sessions',
   requireAuth,
   async (req: Request, res: Response) => {
-    const sessions = await Session.find({
-      userId: req.currentUser!.id,
-    })
-    .sort({ createdAt: -1 });
+    const sessions = await Session.find({})
+      .sort({ createdAt: -1 });
 
     res.send(sessions);
   }

@@ -1,5 +1,5 @@
 import { Message } from 'node-nats-streaming';
-import { Listener, WorksheetUpdatedEvent, Subjects, NotFoundError } from '@liranmazor/common';
+import { Listener, WorksheetUpdatedEvent, Subjects } from '@liranmazor/common';
 import { WorksheetService } from '../../services/worksheet.service';
 
 export class WorksheetUpdatedListener extends Listener<WorksheetUpdatedEvent> {

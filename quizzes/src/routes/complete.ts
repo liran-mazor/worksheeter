@@ -22,17 +22,8 @@ router.post(
 
     const updatedQuiz = await QuizService.complete(quizId, score, req.currentUser!.id);
 
-    let questions = [];
-    if (updatedQuiz.questions && Array.isArray(updatedQuiz.questions.questions)) {
-      questions = updatedQuiz.questions.questions;
-    } else if (Array.isArray(updatedQuiz.questions)) {
-      questions = updatedQuiz.questions;
-    }
-
-    res.status(200).send({
-      ...updatedQuiz,
-      questions,
-    });
+    const normalizedQuiz = QuizService.normalizeQuizForFrontend(updatedQuiz);
+    res.status(200).send(normalizedQuiz);
 
     try {
       await new QuizCompletePublisher(natsClient.client).publish({

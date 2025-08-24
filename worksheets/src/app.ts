@@ -33,7 +33,7 @@ app.use(
     secure: false, 
     httpOnly: true, 
     maxAge: 5 * 60 * 60 * 1000,  
-    domain: '.worksheeter.dev', 
+    domain: undefined, 
     sameSite: 'lax'
   })
  );

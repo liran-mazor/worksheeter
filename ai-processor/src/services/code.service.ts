@@ -1,5 +1,5 @@
-import { claudeClient } from '../lib/claude-client';
 import { ClaudeApiError, CodeAnalysis } from '@liranmazor/common';
+import { claudeClient } from '../lib/claude-client';
 
 export class CodeService {
   async generateCodeAnalysis(
@@ -81,7 +81,7 @@ Respond in this exact JSON format:
     "problemDifficulty": "easy|medium|hard",
     "codeLength": ${userCode.length},
     "languageFeatures": ["specific features used like loops, conditionals, arrays, etc"]
-  }
+  } 
 }
 }`;
       

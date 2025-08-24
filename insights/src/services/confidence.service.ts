@@ -1,6 +1,6 @@
 import { ConfidenceMetrics, ConfidenceThresholds } from "../types/types";
 
-export class ConfidenceAnalyzer {
+export class ConfidenceService {
   private thresholds: ConfidenceThresholds = {
     high: 80,
     medium: 60,
@@ -265,4 +265,4 @@ export class ConfidenceAnalyzer {
   }
 }
 
-export const confidenceAnalyzer = new ConfidenceAnalyzer();
+export const confidenceService = new ConfidenceService();

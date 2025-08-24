@@ -1,10 +1,10 @@
-import { vectorClient } from '../lib/vector-client';
-import { Collection } from 'chromadb';
+import { Collection, ChromaClient } from 'chromadb';
 import { VectorOperationError } from '@liranmazor/common';
 import { OpenAIEmbeddingFunction } from '../lib/openai-embedding';
 import { LearningEventSearchResult, SearchFilters } from '../types/types';
 
 export class VectorService {
+  private client?: ChromaClient;
   private readonly COLLECTION_NAME = 'learning_events';
   private collection: Collection | null = null;
   private embeddingFunction: OpenAIEmbeddingFunction;
@@ -15,9 +15,14 @@ export class VectorService {
 
   async initialize() {
     try {
-      const chroma = vectorClient.chroma;
+      this.client = new ChromaClient({
+        host: process.env.CHROMA_HOST!,
+        port: parseInt(process.env.CHROMA_PORT!)
+      });
       
-      this.collection = await chroma.getOrCreateCollection({
+      console.log('Connected to ChromaDB')
+      
+      this.collection = await this.client.getOrCreateCollection({
         name: this.COLLECTION_NAME,
         embeddingFunction: this.embeddingFunction,
         metadata: { 
@@ -28,7 +33,7 @@ export class VectorService {
         }
       });
       
-      console.log('✅ Vector collection initialized successfully');
+      console.log('Vector collection initialized');
     } catch (error) {
       console.error('❌ Vector service initialization failed:', error);
       throw new VectorOperationError('vector service initialization', error);

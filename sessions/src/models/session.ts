@@ -3,22 +3,33 @@ import mongoose from 'mongoose';
 interface SessionAttrs {
   title: string;
   userId: string;
-  audioFile?: string;
-  transcript?: string;
-  summary: string;
+  mentor?: string;
+  class?: string;
+  roomUrl?: string;
+  roomName?: string;
+  recordingUrl?: string;
+  transcript?: string;    
+  summary?: string;
+  keyTopics?: string[];  
   duration?: number;
-  status: 'processing' | 'completed';
+  status: 'live' | 'completed' | 'processing' | 'failed';
 }
 
 interface SessionDoc extends mongoose.Document {
   title: string;
   userId: string;
-  audioFile?: string;
-  transcript?: string;
-  summary: string;
+  mentor?: string;
+  class?: string;
+  roomUrl?: string;
+  roomName?: string;
+  recordingUrl?: string;
+  transcript?: string;    
+  summary?: string;
+  keyTopics?: string[];  
   duration?: number;
-  status: 'processing' | 'completed';
+  status: 'live' | 'completed' | 'processing' | 'failed';
   createdAt: Date;
+  updatedAt: Date;
 }
 
 interface SessionModel extends mongoose.Model<SessionDoc> {
@@ -30,41 +41,54 @@ const sessionSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      trim: true,
+      maxlength: 200,
     },
     userId: {
       type: String,
       required: true,
-      index: true,
     },
-    audioFile: {
+    mentor: {
       type: String,
-      required: false,
+      maxlength: 100,
     },
-    transcript: {
+    class: {
       type: String,
-      required: false,
+      maxlength: 50,
+    },
+    roomUrl: {
+      type: String,
+    },
+    roomName: {
+      type: String,
+    },
+    recordingUrl: {
+      type: String,
+    },
+    transcript: {           // Add transcript field
+      type: String,
+      default: '',
     },
     summary: {
       type: String,
-      required: true,
+      default: '',
+    },
+    keyTopics: {            // Add keyTopics field
+      type: [String],
+      default: [],
     },
     duration: {
-      type: Number,
-      required: false,
-      min: 0,
+      type: Number, 
     },
     status: {
       type: String,
-      enum: ['processing', 'completed'],
-      default: 'processing',
-      required: true,
+      enum: ['live', 'completed', 'processing', 'failed'],
+      default: 'live',
     },
   },
   {
-    timestamps: { createdAt: true, updatedAt: false },
+    timestamps: true,
     toJSON: {
-      transform(doc, ret: any) {
+      transform(doc: any, ret: any) {
         ret.id = ret._id;
         delete ret._id;
         delete ret.__v;
@@ -72,9 +96,6 @@ const sessionSchema = new mongoose.Schema(
     },
   }
 );
-
-sessionSchema.index({ userId: 1, status: 1 });
-sessionSchema.index({ createdAt: -1 });
 
 sessionSchema.statics.build = (attrs: SessionAttrs) => {
   return new Session(attrs);

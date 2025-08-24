@@ -1,6 +1,6 @@
 import { PROBLEMS, PROBLEM_CATEGORIES } from "../lib/problems-data";
 import { NotFoundError, requireAuth } from "@liranmazor/common";
-import express, { Request, Response, Router } from 'express';
+import express, { Request, Response } from 'express';
 
 const router = express.Router();
 

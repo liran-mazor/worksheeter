@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: sessions
-          image: liran1789/sessions
+          image: us.gcr.io/worksheeter-468814/sessions
           env:
             - name: MONGO_URI
               value: 'mongodb://sessions-mongo-srv:27017/sessions'
@@ -33,6 +33,11 @@ spec:
               value: worksheeter
             - name: QUEUE_GROUP_NAME
               value: 'sessions-service'
+            - name: DAILY_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: daily-secret
+                  key: DAILY_API_KEY
           ports:
             - containerPort: 3000
           readinessProbe:

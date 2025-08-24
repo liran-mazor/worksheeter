@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: liran1789/auth
+          image: us.gcr.io/worksheeter-468814/auth
           env:
             - name: MONGO_URI
               value: 'mongodb://auth-mongo-srv:27017/auth'

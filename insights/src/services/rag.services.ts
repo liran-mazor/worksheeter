@@ -1,7 +1,7 @@
 import { RAGOperationError } from "@liranmazor/common";
 import { claudeClient } from "../lib/claude-client";
 import { vectorService } from "./vector.service";
-import { confidenceAnalyzer } from "./confidence.service";
+import { confidenceService } from "./confidence.service";
 import { ConfidenceMetrics } from "../types/types";
 
 export class RAGService {
@@ -49,7 +49,7 @@ export class RAGService {
       }
 
       // STEP 5: CONFIDENCE ANALYSIS
-      const confidence = confidenceAnalyzer.calculateConfidence(
+      const confidence = confidenceService.calculateConfidence(
         userQuery,
         relevantUserResults,
         peerResults
@@ -57,7 +57,7 @@ export class RAGService {
       
       console.log(`🎯 Confidence Analysis: ${confidence.overall}% overall (D:${confidence.dataQuality}% R:${confidence.relevance}% F:${confidence.recency}% C:${confidence.completeness}%)`);
       
-      const confidenceLevel = confidenceAnalyzer.getConfidenceLevel(confidence.overall);
+      const confidenceLevel = confidenceService.getConfidenceLevel(confidence.overall);
       
       // STEP 6: Handle low confidence cases
       if (confidenceLevel === 'reject') {
@@ -93,7 +93,8 @@ export class RAGService {
       // Fast keyword-based classification
       const learningKeywords = [
         'how am i doing', 'how do i compare', 'progress', 'performance', 'learning',
-        'study', 'quiz', 'coding', 'programming', 'worksheet', 'help me', 'teach me',
+        'study', 'quiz', 'quizzes', 'coding', 'programming', 'worksheet', 'worksheets',
+        'help me', 'teach me', 'help', 'teach', 'help me',  'assessments',
         'struggling', 'improve', 'better', 'practice', 'challenge', 'understand',
         'explain', 'javascript', 'python', 'algorithm', 'code', 'debug', 'error',
         'score', 'grade', 'assignment', 'homework', 'test', 'exam', 'assessment',
@@ -142,8 +143,8 @@ export class RAGService {
    * Generate response for low confidence situations
    */
   private generateLowConfidenceResponse(query: string, confidence: ConfidenceMetrics): string {
-    const prefix = confidenceAnalyzer.generateConfidencePrefix(confidence, query);
-    const suffix = confidenceAnalyzer.generateConfidenceSuffix(confidence);
+    const prefix = confidenceService.generateConfidencePrefix(confidence, query);
+    const suffix = confidenceService.generateConfidenceSuffix(confidence);
     
     const baseResponse = `I'd love to help with "${query}", but I need more learning data to provide accurate insights.`;
     

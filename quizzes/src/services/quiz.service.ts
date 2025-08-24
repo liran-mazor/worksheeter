@@ -299,4 +299,19 @@ export class QuizService {
 
     return previousQuiz && previousQuiz.status === QuizStatus.COMPLETED;
   }
+
+  static normalizeQuizForFrontend(quiz: Quiz | QuizWithWorksheet): any {
+    // Normalize questions for frontend
+    let questions = [];
+    if (quiz.questions && Array.isArray((quiz.questions as any).questions)) {
+      questions = (quiz.questions as any).questions;
+    } else if (Array.isArray(quiz.questions)) {
+      questions = quiz.questions;
+    }
+
+    return {
+      ...quiz,
+      questions,
+    };
+  }
 }

@@ -14,10 +14,6 @@ router.get(
       throw new NotFoundError();
     }
 
-    if (session.userId !== req.currentUser!.id) {
-      throw new NotAuthorizedError();
-    }
-
     res.send(session);
   }
 );

@@ -1,5 +1,6 @@
 import { CodeExecutedListener } from './events/listener/code-executed-listener';
 import { QuizCreatedListener } from './events/listener/quiz-created-listener';
+import { SessionCompletedListener } from './events/listener/session-completed-listener';
 import { WorksheetCreatedListener } from './events/listener/worksheet-created-listener';
 import { natsClient } from './lib/nats-client';
 
@@ -20,6 +21,9 @@ const start = async () => {
   if (!process.env.CLAUDE_API_KEY) {
     throw new Error('CLAUDE_API_KEY must be defined');
   }
+  if (!process.env.OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY must be defined');
+  }
 
   try {
     await natsClient.connect(
@@ -32,7 +36,8 @@ const start = async () => {
     new WorksheetCreatedListener(natsClient.client).listen();
     new QuizCreatedListener(natsClient.client).listen();
     new CodeExecutedListener(natsClient.client).listen();
-    
+    new SessionCompletedListener(natsClient.client).listen();  
+
   } catch (err) {
     console.error(err);
   }

@@ -14,18 +14,8 @@ router.get(
       throw new NotAuthorizedError();
     }
 
-    // Normalize questions for frontend
-    let questions = [];
-    if (quiz.questions && Array.isArray(quiz.questions.questions)) {
-      questions = quiz.questions.questions;
-    } else if (Array.isArray(quiz.questions)) {
-      questions = quiz.questions;
-    }
-
-    res.send({
-      ...quiz,
-      questions,
-    });
+    const normalizedQuiz = QuizService.normalizeQuizForFrontend(quiz);
+    res.send(normalizedQuiz);
   }
 );
 

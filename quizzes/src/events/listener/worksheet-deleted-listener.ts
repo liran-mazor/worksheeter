@@ -1,5 +1,5 @@
 import { Message } from 'node-nats-streaming';
-import { Listener, WorksheetDeletedEvent, Subjects, NotFoundError } from '@liranmazor/common';
+import { Listener, WorksheetDeletedEvent, Subjects } from '@liranmazor/common';
 import { WorksheetService } from '../../services/worksheet.service';
 import { QuizService } from '../../services/quiz.service';
 import { prisma } from '../../lib/prisma-client';

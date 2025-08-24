@@ -1,10 +1,10 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
 
 import { Password } from '../lib/password';
 import { User } from '../models/user';
-import { validateRequest, BadRequestError } from '@liranmazor/common'; 
+import { validateRequest, BadRequestError } from '@liranmazor/common';
+import { JWTService } from '../services/jwt.service'; 
 
 const router = express.Router();
 
@@ -36,17 +36,10 @@ router.post('/api/auth/users/signin',
       throw new BadRequestError('Password does not match');
     }
 
-    const userJwt = jwt.sign(
-      {
-        id: existingUser.id,
-        email: existingUser.email,
-      },
-      process.env.JWT_KEY!
-    );
-
-    req.session = {
-      jwt: userJwt,
-    };
+    JWTService.setUserSession(req, {
+      id: existingUser.id,
+      email: existingUser.email,
+    });
 
     res.status(200).send(existingUser);
   }

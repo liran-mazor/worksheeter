@@ -2,18 +2,14 @@ import { app } from './app';
 import { natsClient } from './lib/nats-client';
 import { QuizCompleteListener } from './events/quiz-complete-listener';
 import { CodeAnalyzedListener } from './events/code-analyzed-listener';
-import { prisma } from './lib/prisma-client';
 import { WorksheetCreatedListener } from './events/worksheet-created-listener';
-import { vectorClient } from './lib/vector-client';
 import { vectorService } from './services/vector.service';
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
     throw new Error('JWT_KEY must be defined');
   }
-  if (!process.env.DATABASE_URL) {
-    throw new Error('DATABASE_URL must be defined');
-  }
+
   if (!process.env.NATS_CLIENT_ID) {
     throw new Error('NATS_CLIENT_ID must be defined');
   }
@@ -32,13 +28,15 @@ const start = async () => {
   if (!process.env.CLAUDE_API_KEY) {
     throw new Error('CLAUDE_API_KEY must be defined');
   }
+  if (!process.env.CHROMA_HOST) {
+    throw new Error('CHROMA_HOST must be defined');
+  }
+  if (!process.env.CHROMA_PORT) {
+    throw new Error('CHROMA_PORT must be defined');
+  }
   
   try {
-    await vectorClient.connect();
     await vectorService.initialize();
-    
-    await prisma.$connect();
-    console.log('Connected to PostgreSQL');
     
     await natsClient.connect(
       process.env.NATS_CLUSTER_ID,

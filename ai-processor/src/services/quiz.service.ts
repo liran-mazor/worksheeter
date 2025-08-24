@@ -1,24 +1,24 @@
 import { claudeClient } from '../lib/claude-client';
 import { ClaudeApiError } from '@liranmazor/common';
-import { QuizQuestion } from '../types/quiz';
+import { QuizQuestion } from '../types/types';
 
 export class QuizService {
   private validateQuizQuestions(questions: any[], operation: string): QuizQuestion[] {
     if (questions.length !== 10) {
-      throw new ClaudeApiError(operation, new Error(`Expected exactly 10 questions but got ${questions.length}`));
+      throw new Error(`Expected exactly 10 questions but got ${questions.length}`);
     }
 
     questions.forEach((item, i) => {
       if (!item.question || !item.options || !item.correctAnswer) {
-        throw new ClaudeApiError(operation, new Error(`Question ${i + 1}: Missing required fields`));
+        throw new Error(`Question ${i + 1}: Missing required fields`);
       }
 
       if (!Array.isArray(item.options) || item.options.length !== 4) {
-        throw new ClaudeApiError(operation, new Error(`Question ${i + 1}: Must have exactly 4 options`));
+        throw new Error(`Question ${i + 1}: Must have exactly 4 options`);
       }
 
       if (!item.options.includes(item.correctAnswer)) {
-        throw new ClaudeApiError(operation, new Error(`Question ${i + 1}: Correct answer must be one of the provided options`));
+        throw new Error(`Question ${i + 1}: Correct answer must be one of the provided options`);
       }
     });
 
@@ -34,14 +34,14 @@ export class QuizService {
     
     try {
       if (!keywords?.length) {
-        throw new ClaudeApiError(operation, new Error('No keywords provided'));
+        throw new Error('No keywords provided');
       }
       if (!title?.trim()) {
-        throw new ClaudeApiError(operation, new Error('No title provided'));
+        throw new Error('No title provided');
       }
       
       if (!['beginner', 'intermediate', 'advanced'].includes(difficulty)) {
-        throw new ClaudeApiError(operation, new Error(`Invalid difficulty level: ${difficulty}`));
+        throw new Error(`Invalid difficulty level: ${difficulty}`);
       }
 
       const difficultyPrompts = {
@@ -82,7 +82,7 @@ export class QuizService {
       const parsedResponse = claudeClient.parseJsonResponse<any[]>(responseText, operation);
       
       if (!Array.isArray(parsedResponse)) {
-        throw new ClaudeApiError(operation, new Error('Expected JSON array'));
+        throw new ClaudeApiError(operation, 'Expected JSON array');
       }
       
       return this.validateQuizQuestions(parsedResponse, operation);

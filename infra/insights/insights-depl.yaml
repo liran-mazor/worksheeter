@@ -14,15 +14,8 @@ spec:
     spec:
       containers:
         - name: insights
-          image: liran1789/insights
+          image: us.gcr.io/worksheeter-468814/insights
           env:
-            - name: DATABASE_URL
-              value: 'postgresql://pudding:asdf@insights-postgres-srv:5432/insights'
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret
-                  key: POSTGRES_PASSWORD
             - name: NATS_CLIENT_ID
               valueFrom:
                 fieldRef:
@@ -48,6 +41,10 @@ spec:
                 secretKeyRef:
                   name: claude-secret
                   key: CLAUDE_API_KEY
+            - name: CHROMA_HOST
+              value: 'insights-chroma-srv'
+            - name: CHROMA_PORT
+              value: '8000'
           ports:
             - containerPort: 3000
           readinessProbe:

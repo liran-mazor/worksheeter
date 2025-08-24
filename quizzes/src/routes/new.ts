@@ -24,8 +24,6 @@ router.post(
   async (req: Request, res: Response): Promise<void> => {
     const { worksheetId, difficulty } = req.body;
 
-    const worksheet = await WorksheetService.findById(worksheetId);
-
     const existingQuiz = await QuizService.findByWorksheetAndDifficulty(
       worksheetId,
       req.currentUser!.id,
@@ -37,6 +35,8 @@ router.post(
       return;
     }
 
+    const worksheet = await WorksheetService.findById(worksheetId);
+
     const quiz = await QuizService.create({
       worksheetId,
       userId: req.currentUser!.id,
@@ -44,9 +44,9 @@ router.post(
       difficulty: difficulty as Difficulty
     });
 
-    const difficultyString = quiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced';
-
     res.status(201).send(quiz);
+    
+    const difficultyString = quiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced';
     
     try {
       await new QuizCreatedPublisher(natsClient.client).publish({

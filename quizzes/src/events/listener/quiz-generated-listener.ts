@@ -1,5 +1,5 @@
 import { Message } from 'node-nats-streaming';
-import { Listener, Subjects, QuizGeneratedEvent, NotFoundError } from '@liranmazor/common';
+import { Listener, Subjects, QuizGeneratedEvent } from '@liranmazor/common';
 import { QuizService } from '../../services/quiz.service';
 
 export class QuizGeneratedListener extends Listener<QuizGeneratedEvent> {
