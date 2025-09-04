@@ -1,6 +1,11 @@
 import request from 'supertest';
 import { app } from '../../app';
 
+// Mock NATS
+jest.mock('../../lib/nats-client', () => ({
+  natsClient: { client: {} }
+}));
+
 describe('DELETE /api/worksheets/:id', () => {
   it('returns 404 if the worksheet is not found', async () => {
     const id = '507f1f77bcf86cd799439011';

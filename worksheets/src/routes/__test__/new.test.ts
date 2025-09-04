@@ -1,6 +1,11 @@
 import request from 'supertest';
 import { app } from '../../app';
 
+// Mock NATS
+jest.mock('../../lib/nats-client', () => ({
+  natsClient: { client: {} }
+}));
+
 describe('POST /api/worksheets', () => {
   it('returns 400 when no data is provided', async () => {
     await request(app)

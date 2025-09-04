@@ -8,10 +8,6 @@ declare global {
 
 let mongo: any;
 
-jest.mock('../lib/nats-client', () => ({
-  natsClient: { client: {} }
-}));
-
 jest.mock('../events/publisher/worksheet-created-publisher', () => ({
   WorksheetCreatedPublisher: jest.fn().mockImplementation(() => ({
     publish: jest.fn().mockResolvedValue(undefined)

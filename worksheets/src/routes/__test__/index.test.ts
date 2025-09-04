@@ -1,6 +1,11 @@
 import request from 'supertest';
 import { app } from '../../app';
 
+// Mock NATS
+jest.mock('../../lib/nats-client', () => ({
+  natsClient: { client: {} }
+}));
+
 it('returns a list of worksheets', async () => {
   const cookie = global.signin();
 
