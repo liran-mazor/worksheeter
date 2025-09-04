@@ -1,5 +1,10 @@
 import jwt from 'jsonwebtoken';
 
+// Mock NATS client globally for all tests
+jest.mock('../lib/nats-client', () => ({
+  natsClient: { client: {} }
+}));
+
 declare global {
   var signin: () => string[];
 }

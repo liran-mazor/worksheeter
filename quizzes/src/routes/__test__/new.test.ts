@@ -1,12 +1,6 @@
 import request from 'supertest';
 import { app } from '../../app';
 
-// Mock NATS
-jest.mock('../../lib/nats-client', () => ({
-  natsClient: { client: {} }
-}));
-
-
 jest.mock('../../events/publisher/quiz-created-publisher', () => ({
   QuizCreatedPublisher: jest.fn().mockImplementation(() => ({
     publish: jest.fn().mockResolvedValue(undefined)
