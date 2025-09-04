@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 
-import { Password } from '../lib/password';
+import { PasswordService } from '../services/password.service';
 import { User } from '../models/user';
 import { validateRequest, BadRequestError } from '@liranmazor/common';
 import { JWTService } from '../services/jwt.service'; 
@@ -27,7 +27,7 @@ router.post('/api/auth/users/signin',
       throw new BadRequestError('You must Sign-Up first');
     }
 
-    const passwordsMatch = await Password.compare(
+    const passwordsMatch = await PasswordService.compare(
       existingUser.password,
       password
     );
