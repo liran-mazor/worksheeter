@@ -1,23 +1,12 @@
 import jwt from 'jsonwebtoken';
 
-// Mock NATS wrapper
-jest.mock('../lib/nats-client', () => ({
-  natsClient: {
-    client: {
-      publish: jest.fn().mockImplementation((subject: string, data: string, callback?: Function) => {
-        if (callback) callback();
-        return Promise.resolve();
-      })
-    }
-  }
-}));
-
 declare global {
   var signin: () => string[];
 }
 
 beforeAll(async () => {
   process.env.JWT_KEY = "asdfasdf";
+  process.env.NODE_ENV = "test";
 });
 
 global.signin = () => {

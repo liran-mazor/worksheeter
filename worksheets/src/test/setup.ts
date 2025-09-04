@@ -8,18 +8,6 @@ declare global {
 
 let mongo: any;
 
-// Mock NATS wrapper
-jest.mock('../lib/nats-client', () => ({
-  natsClient: {
-    client: {
-      publish: jest.fn().mockImplementation((subject: string, data: string, callback?: Function) => {
-        if (callback) callback();
-        return Promise.resolve();
-      })
-    }
-  }
-}));
-
 jest.mock('../events/publisher/worksheet-created-publisher', () => ({
   WorksheetCreatedPublisher: jest.fn().mockImplementation(() => ({
     publish: jest.fn().mockResolvedValue(undefined)
@@ -40,6 +28,7 @@ jest.mock('../events/publisher/worksheet-deleted-publisher', () => ({
 
 beforeAll(async () => {
   process.env.JWT_KEY = "asdfasdf";
+  process.env.NODE_ENV = "test";
 
   mongo = await MongoMemoryServer.create();
   const mongoUri = mongo.getUri();

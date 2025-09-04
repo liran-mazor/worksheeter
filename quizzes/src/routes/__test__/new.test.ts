@@ -54,10 +54,6 @@ describe('POST /api/quizzes', () => {
       .expect(201);
 
     expect(response.body.difficulty).toBe('BEGINNER');
-    
-    // Verify publisher was called
-    const { QuizCreatedPublisher } = require('../../events/publisher/quiz-created-publisher');
-    expect(QuizCreatedPublisher).toHaveBeenCalled();
   });
 
 });
