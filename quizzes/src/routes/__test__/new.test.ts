@@ -1,11 +1,6 @@
 import request from 'supertest';
 import { app } from '../../app';
 
-// Mock NATS
-jest.mock('../../lib/nats-client', () => ({
-  natsClient: { client: {} }
-}));
-
 jest.mock('../../events/publisher/quiz-created-publisher', () => ({
   QuizCreatedPublisher: jest.fn().mockImplementation(() => ({
     publish: jest.fn().mockResolvedValue(undefined)
@@ -59,6 +54,10 @@ describe('POST /api/quizzes', () => {
       .expect(201);
 
     expect(response.body.difficulty).toBe('BEGINNER');
+    
+    // Verify publisher was called
+    const { QuizCreatedPublisher } = require('../../events/publisher/quiz-created-publisher');
+    expect(QuizCreatedPublisher).toHaveBeenCalled();
   });
 
 });
