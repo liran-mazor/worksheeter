@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: quizzes
-          image: us.gcr.io/worksheeter-468814/quizzes
+          image: liran1789/quizzes
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:

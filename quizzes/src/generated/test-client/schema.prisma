@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/test-client" // Generate to separate location
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum QuizStatus {
+  PROCESSING
+  AVAILABLE
+  COMPLETED
+  FAILED
+}
+
+enum Difficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model Worksheet {
+  id        String   @id
+  title     String
+  userId    String
+  keywords  String // Store as JSON string for SQLite
+  version   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  quizzes Quiz[]
+}
+
+model Quiz {
+  id          String     @id @default(cuid())
+  worksheetId String
+  userId      String
+  title       String
+  difficulty  Difficulty
+  questions   String // Store as JSON string for SQLite
+  status      QuizStatus @default(PROCESSING)
+  score       Int?
+  completedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  version     Int
+
+  worksheet Worksheet @relation(fields: [worksheetId], references: [id])
+
+  @@unique([worksheetId, difficulty])
+}

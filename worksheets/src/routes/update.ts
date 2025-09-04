@@ -69,7 +69,7 @@ router.put(
         version: worksheet.version
       });
     } catch (error) {
-      console.error('Failed to publish worksheet update event:', error);
+        console.error('Failed to publish worksheet update event:', error);
     }
   }
 );

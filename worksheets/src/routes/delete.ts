@@ -31,9 +31,8 @@ router.delete(
         userId: worksheet.userId,
       });
     } catch (error) {
-      console.error('Failed to publish worksheet deletion event:', error);
+        console.error('Failed to publish worksheet deletion event:', error);
     }
-
   }
 );
 export { router as deleteWorksheetRouter };

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: insights
-          image: us.gcr.io/worksheeter-468814/insights
+          image: liran1789/insights
           env:
             - name: NATS_CLIENT_ID
               valueFrom:

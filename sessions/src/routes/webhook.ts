@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { NotFoundError, BadRequestError } from '@liranmazor/common';
+import { BadRequestError } from '@liranmazor/common';
 import { Session } from '../models/session';
 import { SessionCompletedPublisher } from '../events/session-completed-publisher';
 import { natsClient } from '../lib/nats-client';

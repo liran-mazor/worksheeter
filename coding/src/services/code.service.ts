@@ -1,5 +1,5 @@
 import { randomBytes } from 'crypto';
-import { SupportedLanguage } from '../types/type';
+import { SupportedLanguage } from '../types/types';
 
 export class CodeService {
   // Generates a unique submission ID

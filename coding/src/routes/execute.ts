@@ -6,7 +6,7 @@ import { CodeExecutedPublisher } from '../events/code-executed-publisher';
 import { natsClient } from '../lib/nats-client';
 import { randomBytes } from 'crypto';
 import { PROBLEMS } from '../lib/problems-data';
-import { SupportedLanguage, SUPPORTED_LANGUAGES } from '../types/type';
+import { SupportedLanguage, SUPPORTED_LANGUAGES } from '../types/types';
 import { CodeService } from '../services/code.service';
 
 const router = express.Router();

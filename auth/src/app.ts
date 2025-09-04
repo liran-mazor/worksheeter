@@ -30,7 +30,7 @@ app.use(json());
 app.use(
   cookieSession({
     signed: false,
-    secure: false, 
+    secure: process.env.NODE_ENV === 'production', 
     httpOnly: true, 
     maxAge: 5 * 60 * 60 * 1000,  
     domain: undefined, 

@@ -24,11 +24,11 @@ export class ConfidenceService {
 
     // Weighted overall confidence calculation
     const overall = Math.round(
-      dataQuality * 0.25 +      // 25% - quality of data
-      relevance * 0.30 +        // 30% - relevance to query  
-      recency * 0.15 +          // 15% - freshness of data
-      completeness * 0.20 +     // 20% - data completeness
-      consistency * 0.10        // 10% - pattern consistency
+      dataQuality * 0.25 +      
+      relevance * 0.30 +        
+      recency * 0.15 +          
+      completeness * 0.20 +     
+      consistency * 0.10        
     );
 
     return {

@@ -134,7 +134,6 @@ export class RAGService {
       return isLearning;
     } catch (error) {
       console.error('❌ Query classification failed:', error);
-      console.log(`🎯 Classification error for: "${query}" → defaulting to LEARNING`);
       return true;
     }
   }

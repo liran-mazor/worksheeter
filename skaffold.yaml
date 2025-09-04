@@ -4,12 +4,10 @@ manifests:
   rawYaml:
     - ./infra/**/*
 build:
-  # local:
-  #   push: false
-  googleCloudBuild:
-    projectId: worksheeter-468814
+  local:
+    push: false
   artifacts:
-    - image: us.gcr.io/worksheeter-468814/auth
+    - image: liran1789/auth
       context: auth
       docker:
         dockerfile: Dockerfile
@@ -17,7 +15,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/client
+    - image: liran1789/client
       context: client
       docker:
         dockerfile: Dockerfile
@@ -25,7 +23,7 @@ build:
         manual:
           - src: '**/*.js'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/worksheets
+    - image: liran1789/worksheets
       context: worksheets
       docker:
         dockerfile: Dockerfile
@@ -33,7 +31,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/ai-processor
+    - image: liran1789/ai-processor
       context: ai-processor
       docker:
         dockerfile: Dockerfile
@@ -41,7 +39,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/quizzes
+    - image: liran1789/quizzes
       context: quizzes
       docker:
         dockerfile: Dockerfile
@@ -49,7 +47,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/insights
+    - image: liran1789/insights
       context: insights
       docker:
         dockerfile: Dockerfile
@@ -57,7 +55,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/coding
+    - image: liran1789/coding
       context: coding
       docker:
         dockerfile: Dockerfile
@@ -65,7 +63,7 @@ build:
         manual:
           - src: 'src/**/*.ts'
             dest: .
-    - image: us.gcr.io/worksheeter-468814/sessions
+    - image: liran1789/sessions
       context: sessions
       docker:
         dockerfile: Dockerfile
