@@ -1,0 +1,51 @@
+name: deploy-manifests
+on: 
+  push:
+    branches: 
+      - main
+    paths: 
+      - 'infra/**'
+jobs: 
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v4
+     
+     - name: Install doctl
+       uses: digitalocean/action-doctl@v2
+       with:
+         token: ${{ secrets.DIGITALOCEAN_TOKEN }}
+     
+     - name: Save kubeconfig
+       run: doctl kubernetes cluster kubeconfig save worksheeter
+     
+     - name: Deploy secrets
+       run: kubectl apply -f infra/shared/secrets.yaml
+     
+     - name: Deploy shared infrastructure
+       run: kubectl apply -f infra/shared/
+     
+     - name: Deploy auth services
+       run: kubectl apply -f infra/auth/
+     
+     - name: Deploy worksheets services
+       run: kubectl apply -f infra/worksheets/
+     
+     - name: Deploy quizzes services
+       run: kubectl apply -f infra/quizzes/
+     
+     - name: Deploy sessions services
+       run: kubectl apply -f infra/sessions/
+     
+     - name: Deploy coding services
+       run: kubectl apply -f infra/coding/
+     
+     - name: Deploy AI processor services
+       run: kubectl apply -f infra/ai-processor/
+     
+     - name: Deploy insights services
+       run: kubectl apply -f infra/insights/
+     
+     - name: Wait for deployments
+       run: kubectl rollout status deployment --all --timeout=300s
