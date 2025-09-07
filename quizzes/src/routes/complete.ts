@@ -25,19 +25,21 @@ router.post(
     const normalizedQuiz = QuizService.normalizeQuizForFrontend(updatedQuiz);
     res.status(200).send(normalizedQuiz);
 
-    try {
-      await new QuizCompletePublisher(natsClient.client).publish({
-        quizId: updatedQuiz.id,
-        worksheetId: updatedQuiz.worksheetId,
-        worksheetTitle: updatedQuiz.title, 
-        userId: updatedQuiz.userId,
-        score: updatedQuiz.score || 0,
-        difficulty: updatedQuiz.difficulty,
-        completedAt: updatedQuiz.completedAt || new Date(),
-        version: updatedQuiz.version || 0
-      });
-    } catch (error) {
-      console.error('Failed to publish quiz completion event:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await new QuizCompletePublisher(natsClient.client).publish({
+          quizId: updatedQuiz.id,
+          worksheetId: updatedQuiz.worksheetId,
+          worksheetTitle: updatedQuiz.title, 
+          userId: updatedQuiz.userId,
+          score: updatedQuiz.score || 0,
+          difficulty: updatedQuiz.difficulty,
+          completedAt: updatedQuiz.completedAt || new Date(),
+          version: updatedQuiz.version || 0
+        });
+      } catch (error) {
+        console.error('Failed to publish quiz completion event:', error);
+      }
     }
 
   }

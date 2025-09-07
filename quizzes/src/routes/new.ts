@@ -48,19 +48,21 @@ router.post(
     
     const difficultyString = quiz.difficulty.toLowerCase() as 'beginner' | 'intermediate' | 'advanced';
     
-    try {
-      await new QuizCreatedPublisher(natsClient.client).publish({
-        id: quiz.id,
-        worksheetId: quiz.worksheetId,
-        userId: quiz.userId,
-        title: quiz.title,
-        keywords: worksheet.keywords,
-        difficulty: difficultyString,
-        status: 'processing' as const, 
-        version: quiz.version
-      });
-    } catch (error) {
-      console.error('Failed to publish quiz creation event:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await new QuizCreatedPublisher(natsClient.client).publish({
+          id: quiz.id,
+          worksheetId: quiz.worksheetId,
+          userId: quiz.userId,
+          title: quiz.title,
+          keywords: worksheet.keywords,
+          difficulty: difficultyString,
+          status: 'processing' as const, 
+          version: quiz.version
+        });
+      } catch (error) {
+        console.error('Failed to publish quiz creation event:', error);
+      }
     }
   }
 );

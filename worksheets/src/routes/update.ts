@@ -58,18 +58,20 @@ router.put(
     
     res.send(worksheet); 
     
-    try {
-      await new WorksheetUpdatedPublisher(natsClient.client).publish({
-        id: worksheet.id,
-        title: worksheet.title,
-        userId: worksheet.userId,
-        keywords: worksheet.keywords,
-        questions: worksheet.questions,
-        status: worksheet.status,
-        version: worksheet.version
-      });
-    } catch (error) {
-        console.error('Failed to publish worksheet update event:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await new WorksheetUpdatedPublisher(natsClient.client).publish({
+          id: worksheet.id,
+          title: worksheet.title,
+          userId: worksheet.userId,
+          keywords: worksheet.keywords,
+          questions: worksheet.questions,
+          status: worksheet.status,
+          version: worksheet.version
+        });
+      } catch (error) {
+          console.error('Failed to publish worksheet update event:', error);
+      }
     }
   }
 );

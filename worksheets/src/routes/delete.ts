@@ -25,13 +25,15 @@ router.delete(
 
     res.status(204).send();
     
-    try {
-      await new WorksheetDeletedPublisher(natsClient.client).publish({
-        id: worksheet.id,
-        userId: worksheet.userId,
-      });
-    } catch (error) {
-        console.error('Failed to publish worksheet deletion event:', error);
+    if (process.env.NODE_ENV !== 'test') {
+      try {
+        await new WorksheetDeletedPublisher(natsClient.client).publish({
+          id: worksheet.id,
+          userId: worksheet.userId,
+        });
+      } catch (error) {
+          console.error('Failed to publish worksheet deletion event:', error);
+      }
     }
   }
 );

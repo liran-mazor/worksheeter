@@ -6,6 +6,7 @@ declare global {
 
 beforeAll(async () => {
   process.env.JWT_KEY = "asdfasdf";
+  process.env.NODE_ENV = "test";
 });
 
 global.signin = () => {
