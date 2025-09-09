@@ -19,13 +19,9 @@ router.post(
     const { query } = req.body;
     const userId = req.currentUser!.id;
 
-    try {
-      const response = await ragService.generateAnswer(query, userId);
-      
-      res.status(200).json({response});
-    } catch (error) {
-      console.error('Thomas chat error:', error);
-    }
+    const response = await ragService.generateAnswer(query, userId);
+    
+    res.status(200).json({response});
   }
 );
 

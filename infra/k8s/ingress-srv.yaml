@@ -10,7 +10,7 @@ spec:
     - host: worksheeter.dev
       http:
         paths:
-          - path: /api/auth/users/?(.*)
+          - path: /api/auth/?(.*)
             pathType: ImplementationSpecific
             backend:
               service:

@@ -5,17 +5,17 @@ import { KeywordDefinition, QuestionAnswer } from '../types/types';
 export class WorksheetService {
   private validateInputs(keywords: string[], title: string, operation: string): void {
     if (!keywords?.length) {
-      throw new Error('No keywords provided');
+      throw new ClaudeApiError(operation, new Error('No keywords provided'));
     }
     if (!title?.trim()) {
-      throw new Error('No title provided');
+      throw new ClaudeApiError(operation, new Error('No title provided'));
     }
   }
 
   private validateKeywordDefinitions(definitions: any[], operation: string): KeywordDefinition[] {
     for (const item of definitions) {
       if (!item.keyword || !item.definition) {
-        throw new Error('Invalid keyword definition format');
+        throw new ClaudeApiError(operation, new Error('Invalid keyword definition format - missing keyword or definition field'));
       }
     }
     return definitions;
@@ -24,7 +24,7 @@ export class WorksheetService {
   private validateQuestionAnswers(answers: any[], operation: string): QuestionAnswer[] {
     for (const item of answers) {
       if (!item.question || !item.answer) {
-        throw new Error('Invalid question answer format');
+        throw new ClaudeApiError(operation, new Error('Invalid question answer format - missing question or answer field'));
       }
     }
     return answers;
@@ -50,7 +50,7 @@ export class WorksheetService {
       const parsedResponse = claudeClient.parseJsonResponse<any[]>(responseText, operation);
       
       if (!Array.isArray(parsedResponse)) {
-        throw new ClaudeApiError('Expected JSON array');
+        throw new ClaudeApiError(operation, new Error('Expected JSON array but got different format'));
       }
       
       return this.validateKeywordDefinitions(parsedResponse, operation);
@@ -64,7 +64,7 @@ export class WorksheetService {
     
     try {
       if (!questions?.length) {
-        throw new ClaudeApiError('No questions provided');
+        throw new ClaudeApiError(operation, new Error('No questions provided'));
       }
       this.validateInputs(keywords, title, operation);
 
@@ -81,11 +81,11 @@ export class WorksheetService {
 
       Respond only with valid JSON, no additional text.`;
 
-      const responseText = await claudeClient.callClaude(prompt, 3000, operation);
+      const responseText = await claudeClient.callClaude(prompt, 3500, operation);
       const parsedResponse = claudeClient.parseJsonResponse<any[]>(responseText, operation);
       
       if (!Array.isArray(parsedResponse)) {
-        throw new ClaudeApiError('Expected JSON array');
+        throw new ClaudeApiError(operation, new Error('Expected JSON array but got different format'));
       }
       
       return this.validateQuestionAnswers(parsedResponse, operation);

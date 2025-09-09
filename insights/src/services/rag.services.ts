@@ -3,6 +3,7 @@ import { claudeClient } from "../lib/claude-client";
 import { vectorService } from "./vector.service";
 import { confidenceService } from "./confidence.service";
 import { ConfidenceMetrics } from "../types/types";
+import { githubService } from './github.service';
 
 export class RAGService {
   
@@ -11,11 +12,11 @@ export class RAGService {
     userId: string, 
   ): Promise<string> {
     try {
-      // STEP 1: Check if query is learning-related using Claude
-      const isLearningRelated = await this.isQueryLearningRelated(userQuery);
-      
-      if (!isLearningRelated) {
-        return this.generateCasualResponse(userQuery);
+
+      // STEP 1: Check if query needs GitHub integration
+      if (this.detectGitHubIntent(userQuery)) {
+        console.log(`🐙 GitHub integration triggered for query: "${userQuery}"`);
+        return await githubService.searchForLearningContent(userQuery);
       }
 
       // STEP 2: Determine if peer comparison is needed
@@ -86,59 +87,6 @@ export class RAGService {
   }
 
   /**
-   * Use Claude to determine if query is learning-related
-   */
-  private async isQueryLearningRelated(query: string): Promise<boolean> {
-    try {
-      // Fast keyword-based classification
-      const learningKeywords = [
-        'how am i doing', 'how do i compare', 'progress', 'performance', 'learning',
-        'study', 'quiz', 'quizzes', 'coding', 'programming', 'worksheet', 'worksheets',
-        'help me', 'teach me', 'help', 'teach', 'help me',  'assessments',
-        'struggling', 'improve', 'better', 'practice', 'challenge', 'understand',
-        'explain', 'javascript', 'python', 'algorithm', 'code', 'debug', 'error',
-        'score', 'grade', 'assignment', 'homework', 'test', 'exam', 'assessment',
-        'recommendation', 'suggest', 'advice', 'guidance', 'mentor', 'tutor',
-        'yes', 'yeah', 'sure', 'okay', 'roadmap', 'plan', 'focus', 'skill'
-      ];
-      
-      const lowerQuery = query.toLowerCase().trim();
-      
-      if (learningKeywords.some(keyword => lowerQuery.includes(keyword))) {
-        console.log(`🎯 Quick classification: "${query}" → LEARNING (keyword match)`);
-        return true;
-      }
-      
-      if (lowerQuery.length <= 10 && ['yes', 'yeah', 'sure', 'ok', 'okay', 'please', 'help'].includes(lowerQuery)) {
-        console.log(`🎯 Quick classification: "${query}" → LEARNING (short affirmative)`);
-        return true;
-      }
-      
-      // Use Claude for edge cases
-      const classificationPrompt = `Is this query related to learning, education, coding, or academic progress? "${query}" Reply only YES or NO.`;
-
-      const response = await claudeClient.client.messages.create({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 5,
-        messages: [{ role: 'user', content: classificationPrompt }]
-      });
-
-      const content = response.content[0];
-      if (content.type !== 'text') {
-        console.log(`🎯 Claude classification failed for: "${query}" → defaulting to LEARNING`);
-        return true;
-      }
-      
-      const isLearning = content.text.trim().toUpperCase() === 'YES';
-      console.log(`🎯 Claude classification: "${query}" → ${isLearning ? 'LEARNING' : 'NON-LEARNING'}`);
-      return isLearning;
-    } catch (error) {
-      console.error('❌ Query classification failed:', error);
-      return true;
-    }
-  }
-
-  /**
    * Generate response for low confidence situations
    */
   private generateLowConfidenceResponse(query: string, confidence: ConfidenceMetrics): string {
@@ -158,25 +106,6 @@ export class RAGService {
     const hasPeerData = peerResults?.documents?.[0]?.length > 0;
     
     return hasUserData || hasPeerData;
-  }
-
-  /**
-   * Generate casual response for non-learning queries
-   */
-  private generateCasualResponse(query: string): string {
-    const casualResponses = [
-      "I'm Thomas, your learning assistant! I'm here to help with your coding, quizzes, and study progress. Is there anything about your learning journey you'd like to discuss?",
-      
-      "That's interesting! While I'm designed to help with learning and educational topics, I'm always happy to chat. Is there anything about your studies or coding progress you'd like to know about?",
-      
-      "I focus on helping with learning and academic progress, but I appreciate the conversation! Would you like to review your recent quiz performance or coding challenges instead?",
-      
-      "I'm specialized in educational assistance and learning analytics. How about we talk about your study progress or any coding concepts you're working on?",
-      
-      "Thanks for sharing! As your learning assistant, I'm most helpful with educational topics. Would you like insights about your recent learning activities?"
-    ];
-    
-    return casualResponses[Math.floor(Math.random() * casualResponses.length)];
   }
 
   /**
@@ -217,6 +146,33 @@ Once you have more learning activity, I'll be able to provide personalized insig
     
     return comparisonKeywords.some(keyword => lowerQuery.includes(keyword));
   }
+
+  private detectGitHubIntent(query: string): boolean {
+    const lowerQuery = query.toLowerCase();
+    
+    const githubKeywords = [
+      // Direct GitHub references
+      'github', 'repository', 'repo', 'repositories',
+      
+      // Code example requests
+      'code example', 'code examples', 'example code', 'sample code',
+      'show me code', 'find code', 'code snippet', 'source code',
+      
+      // Implementation requests
+      'how to implement', 'implementation', 'example implementation',
+      'how to use', 'usage example', 'syntax example',
+      
+      // Library/framework usage
+      'library usage', 'framework example', 'api usage', 'usage pattern',
+      'best practices', 'tutorial code', 'demo code',
+      
+      // Common search patterns
+      'examples of', 'show example', 'find example', 'sample project'
+    ];
+
+    return (githubKeywords.some(keyword => lowerQuery.includes(keyword))) ? true : false;
+  }
+
 }
 
 export const ragService = new RAGService();

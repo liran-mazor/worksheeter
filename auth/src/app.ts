@@ -9,6 +9,7 @@ import { signinRouter } from './routes/signin';
 import { signupRouter } from './routes/signup';
 import { errorHandler, rateLimiter } from '@liranmazor/common';
 import { healthRouter } from './routes/health';
+import { testApiKeyRouter } from './routes/test-api-key';
 
 const app = express();
 
@@ -44,6 +45,8 @@ app.use(currentUserRouter);
 app.use(signoutRouter);
 app.use(signinRouter);
 app.use(signupRouter);
+
+app.use(testApiKeyRouter);
 
 app.use(errorHandler as any);
 

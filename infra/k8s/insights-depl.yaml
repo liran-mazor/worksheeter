@@ -45,6 +45,11 @@ spec:
               value: 'insights-chroma-srv'
             - name: CHROMA_PORT
               value: '8000'
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: github-secret
+                  key: GITHUB_TOKEN
           ports:
             - containerPort: 3000
           readinessProbe:

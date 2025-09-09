@@ -55,21 +55,19 @@ router.post(
     await worksheet.save();
 
     res.status(201).send(worksheet);
-   
-    if (process.env.NODE_ENV !== 'test') {
-      try {
-        await new WorksheetCreatedPublisher(natsClient.client).publish({
-          id: worksheet.id,
-        title: worksheet.title,
-        userId: worksheet.userId,
-        keywords: worksheet.keywords,
-        questions: worksheet.questions,
-        status: worksheet.status,
-        version: worksheet.version
-        });
-      } catch (error) {
-        console.error('Failed to publish worksheet creation event:', error);
-      }
+    
+    try {
+      await new WorksheetCreatedPublisher(natsClient.client).publish({
+        id: worksheet.id,
+      title: worksheet.title,
+      userId: worksheet.userId,
+      keywords: worksheet.keywords,
+      questions: worksheet.questions,
+      status: worksheet.status,
+      version: worksheet.version
+      });
+    } catch (error) {
+      console.error('Failed to publish worksheet creation event:', error);
     }
   }
 );

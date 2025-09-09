@@ -22,6 +22,7 @@ export class QuizCreatedListener extends Listener<QuizCreatedEvent> {
         questions: questions,
         status: 'available'
       });
+      
     } catch (error) {
       console.error('Quiz generation failed:', error);
     }

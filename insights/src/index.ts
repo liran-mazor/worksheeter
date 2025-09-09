@@ -34,6 +34,9 @@ const start = async () => {
   if (!process.env.CHROMA_PORT) {
     throw new Error('CHROMA_PORT must be defined');
   }
+  if (!process.env.GITHUB_TOKEN) {
+    throw new Error('GITHUB_TOKEN must be defined');
+  }
   
   try {
     await vectorService.initialize();
