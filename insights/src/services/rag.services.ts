@@ -14,13 +14,11 @@ export class RAGService {
     try {
 
       // STEP 1: Check if query needs GitHub integration
-      if (this.detectGitHubIntent(userQuery)) {
+      if (userQuery.toLowerCase().includes("github")) {
         console.log(`🐙 GitHub integration triggered for query: "${userQuery}"`);
         return await githubService.searchForLearningContent(userQuery);
       }
 
-      // STEP 2: Determine if peer comparison is needed
-      const needsPeerData = this.detectPeerComparisonIntent(userQuery);
       const limit = 8;
       
       // STEP 3: RETRIEVAL - Get user's learning data
@@ -37,23 +35,11 @@ export class RAGService {
       const relevantUserResults = vectorService.filterByRelevance(userResults, 0.1);
       console.log(`✅ After relevance filtering: ${relevantUserResults?.documents?.[0]?.length || 0} documents remain`);
       
-      let peerResults;
-      if (needsPeerData) {
-        console.log(`👥 Searching for peer data...`);
-        peerResults = await vectorService.searchLearningEvents(
-          userQuery, 
-          { excludeUserId: userId },
-          limit
-        );
-        peerResults = vectorService.filterByRelevance(peerResults, 0.05);
-        console.log(`👥 Peer results after filtering: ${peerResults?.documents?.[0]?.length || 0} documents`);
-      }
 
       // STEP 5: CONFIDENCE ANALYSIS
       const confidence = confidenceService.calculateConfidence(
         userQuery,
         relevantUserResults,
-        peerResults
       );
       
       console.log(`🎯 Confidence Analysis: ${confidence.overall}% overall (D:${confidence.dataQuality}% R:${confidence.relevance}% F:${confidence.recency}% C:${confidence.completeness}%)`);
@@ -66,7 +52,7 @@ export class RAGService {
       }
       
       // STEP 7: Check if we have enough relevant data (more lenient with confidence)
-      if (!this.hasRelevantData(relevantUserResults, peerResults)) {
+      if (!this.hasRelevantData(relevantUserResults)) {
         return this.generateNoDataResponse(userQuery);
       }
       
@@ -76,7 +62,6 @@ export class RAGService {
         relevantUserResults, 
         userId,
         confidence,
-        peerResults
       );
       
       return answer;
@@ -101,11 +86,10 @@ export class RAGService {
   /**
    * Check if we have relevant learning data for the query
    */
-  private hasRelevantData(userResults: any, peerResults?: any): boolean {
+  private hasRelevantData(userResults: any): boolean {
     const hasUserData = userResults?.documents?.[0]?.length > 0;
-    const hasPeerData = peerResults?.documents?.[0]?.length > 0;
     
-    return hasUserData || hasPeerData;
+    return hasUserData;
   }
 
   /**
@@ -125,52 +109,6 @@ You can start building your learning profile by:
 - Creating new study materials
 
 Once you have more learning activity, I'll be able to provide personalized insights and recommendations! Is there anything specific you'd like to work on?`;
-  }
-
-  /**
-   * Detect if user wants peer comparison insights
-   */
-  private detectPeerComparisonIntent(query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    
-    const comparisonKeywords = [
-      'compare', 'comparison', 'compared to', 'vs', 'versus', 'vs others',
-      'others', 'peers', 'classmates', 'students', 'everyone else', 'other people',
-      'my peers', 'other users', 'the class', 'everyone', 'other students',
-      'how am i doing', 'how do i compare', 'how do i stack up', 'where do i stand',
-      'where am i', 'how am i performing', 'am i doing well', 'am i good',
-      'average', 'mean', 'median', 'percentile', 'ranking', 'rank', 'position',
-      'top', 'bottom', 'above average', 'below average', 'normal',
-      'better than', 'worse than', 'ahead of', 'behind', 'outperform', 'underperform'
-    ];
-    
-    return comparisonKeywords.some(keyword => lowerQuery.includes(keyword));
-  }
-
-  private detectGitHubIntent(query: string): boolean {
-    const lowerQuery = query.toLowerCase();
-    
-    const githubKeywords = [
-      // Direct GitHub references
-      'github', 'repository', 'repo', 'repositories',
-      
-      // Code example requests
-      'code example', 'code examples', 'example code', 'sample code',
-      'show me code', 'find code', 'code snippet', 'source code',
-      
-      // Implementation requests
-      'how to implement', 'implementation', 'example implementation',
-      'how to use', 'usage example', 'syntax example',
-      
-      // Library/framework usage
-      'library usage', 'framework example', 'api usage', 'usage pattern',
-      'best practices', 'tutorial code', 'demo code',
-      
-      // Common search patterns
-      'examples of', 'show example', 'find example', 'sample project'
-    ];
-
-    return (githubKeywords.some(keyword => lowerQuery.includes(keyword))) ? true : false;
   }
 
 }

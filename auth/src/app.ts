@@ -40,7 +40,6 @@ app.use(
 );
 
 app.use(rateLimiter as any);
-
 app.use(currentUserRouter);
 app.use(signoutRouter);
 app.use(signinRouter);

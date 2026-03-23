@@ -1,12 +1,10 @@
 import { githubClient } from '../lib/github-client';
+import { claudeClient } from '../lib/claude-client';
 
 export class GitHubService {
   
   async searchForLearningContent(query: string): Promise<string> {
     try {
-      console.log(`🔍 Searching GitHub for: "${query}"`);
-      
-      // Search GitHub repositories
       const repoResults = await githubClient.searchRepositories(query);
       
       if (!repoResults.items || repoResults.items.length === 0) {
@@ -15,8 +13,7 @@ export class GitHubService {
 Try being more specific with your search terms. You can also ask me about your learning progress instead!`;
       }
 
-      // Format the response with top repositories
-      return this.formatRepositoryResults(repoResults, query);
+      return await this.generateSimpleClaudeResponse(repoResults, query);
       
     } catch (error) {
       console.error('🚨 GitHub search failed:', error);
@@ -26,22 +23,48 @@ Let me help you with your learning progress instead! How are you doing with your
     }
   }
 
-  private formatRepositoryResults(repoResults: any, query: string): string {
-    const topRepos = repoResults.items.slice(0, 3);
-    let response = `🐙 GitHub Search Results for "${query}"\n\n`;
-    
-    topRepos.forEach((repo: any, index: number) => {
-      response += `${index + 1}. ${repo.name} ⭐ ${repo.stargazers_count}\n`;
-      response += `📝 ${repo.description || 'No description available'}\n`;
-      response += `💻 Language: ${repo.language || 'Not specified'}\n`;
-      response += `${repo.html_url}\n`;  // URL on its own line
-      response += `\n`;
-    });
-  
-    response += `💡 Educational Tip: These repositories contain code examples and library usage patterns you can learn from!\n\n`;
-    response += `Would you like me to analyze your recent coding progress or quiz performance instead?`;
-  
-    return response;
+  private async generateSimpleClaudeResponse(repoResults: any, query: string): Promise<string> {
+    try {
+      const topRepos = repoResults.items.slice(0, 3);
+      const repoData = topRepos.map((repo: any, index: number) => {
+        return `${index + 1}. **${repo.name}**
+   - URL: ${repo.html_url}`;
+      }).join('\n\n');
+
+      const prompt = `You are Thomas, a learning assistant. Format these GitHub repositories as simple title and link pairs.
+
+The student searched for: "${query}"
+
+Here are the repositories I found:
+
+${repoData}
+
+INSTRUCTIONS:
+- Start with "🐙 Here are some great repositories for '${query}':"
+- Format each repository as: REPO_TITLE|URL
+- Use a pipe symbol | to separate title and URL
+- Keep it simple - just repository name and URL
+- Put each repository on a separate line with the | separator
+
+Example format:
+🐙 Here are some great repositories for 'react hooks':
+hooks|https://github.com/alibaba/hooks
+react-use|https://github.com/streamich/react-use`;
+
+      const claudeResponse = await claudeClient.callClaude(prompt, 300, 'GitHub simple formatting');
+      return claudeResponse;
+      
+    } catch (claudeError) {
+      console.error('🤖 Claude formatting failed:', claudeError);
+      const topRepos = repoResults.items.slice(0, 3);
+      let response = `🐙 GitHub Search Results for "${query}"\n\n`;
+      
+      topRepos.forEach((repo: any) => {
+        response += `${repo.name}|${repo.html_url}\n`;
+      });
+      
+      return response;
+    }
   }
 }
 

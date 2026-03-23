@@ -38,8 +38,6 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: JWT_KEY
-          ports:
-            - containerPort: 3000
           readinessProbe:
             httpGet:
               path: /api/quizzes/health
